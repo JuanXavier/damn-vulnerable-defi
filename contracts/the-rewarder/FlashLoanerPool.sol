@@ -13,7 +13,6 @@ import "../DamnValuableToken.sol";
  * @dev A simple pool to get flash loans of DVT
  */
 contract FlashLoanerPool is ReentrancyGuard {
-
     using Address for address;
 
     DamnValuableToken public immutable liquidityToken;
@@ -26,17 +25,20 @@ contract FlashLoanerPool is ReentrancyGuard {
         uint256 balanceBefore = liquidityToken.balanceOf(address(this));
         require(amount <= balanceBefore, "Not enough token balance");
 
-        require(msg.sender.isContract(), "Borrower must be a deployed contract");
-        
+        require(
+            msg.sender.isContract(),
+            "Borrower must be a deployed contract"
+        );
+
         liquidityToken.transfer(msg.sender, amount);
 
         msg.sender.functionCall(
-            abi.encodeWithSignature(
-                "receiveFlashLoan(uint256)",
-                amount
-            )
+            abi.encodeWithSignature("receiveFlashLoan(uint256)", amount)
         );
 
-        require(liquidityToken.balanceOf(address(this)) >= balanceBefore, "Flash loan not paid back");
+        require(
+            liquidityToken.balanceOf(address(this)) >= balanceBefore,
+            "Flash loan not paid back"
+        );
     }
 }

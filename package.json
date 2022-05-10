@@ -7,18 +7,18 @@
 		"url": "https://github.com/tinchoabbate/damn-vulnerable-defi.git"
 	},
 	"scripts": {
-		"unstoppable": "npm hardhat test test/unstoppable/unstoppable.challenge.js",
-		"truster": "npm hardhat test test/truster/truster.challenge.js",
-		"naive-receiver": "npm hardhat test test/naive-receiver/naive-receiver.challenge.js",
-		"side-entrance": "npm hardhat test test/side-entrance/side-entrance.challenge.js",
-		"the-rewarder": "npm hardhat test test/the-rewarder/the-rewarder.challenge.js",
-		"selfie": "npm hardhat test test/selfie/selfie.challenge.js",
-		"compromised": "npm hardhat test test/compromised/compromised.challenge.js",
-		"puppet": "npm hardhat test test/puppet/puppet.challenge.js",
-		"puppet-v2": "npm hardhat test test/puppet-v2/puppet-v2.challenge.js",
-		"free-rider": "npm hardhat test test/free-rider/free-rider.challenge.js",
-		"backdoor": "npm hardhat test test/backdoor/backdoor.challenge.js",
-		"climber": "npm hardhat test test/climber/climber.challenge.js"
+		"unstoppable": "npx hardhat test test/unstoppable/unstoppable.challenge.js",
+		"truster": "npx hardhat test test/truster/truster.challenge.js",
+		"naive-receiver": "npx hardhat test test/naive-receiver/naive-receiver.challenge.js",
+		"side-entrance": "npx hardhat test test/side-entrance/side-entrance.challenge.js",
+		"the-rewarder": "npx hardhat test test/the-rewarder/the-rewarder.challenge.js",
+		"selfie": "npx hardhat test test/selfie/selfie.challenge.js",
+		"compromised": "npx hardhat test test/compromised/compromised.challenge.js",
+		"puppet": "npx hardhat test test/puppet/puppet.challenge.js",
+		"puppet-v2": "npx hardhat test test/puppet-v2/puppet-v2.challenge.js",
+		"free-rider": "npx hardhat test test/free-rider/free-rider.challenge.js",
+		"backdoor": "npx hardhat test test/backdoor/backdoor.challenge.js",
+		"climber": "npx hardhat test test/climber/climber.challenge.js"
 	},
 	"devDependencies": {
 		"@gnosis.pm/safe-contracts": "1.3.0",
@@ -34,5 +34,8 @@
 		"ethers": "5.4.7",
 		"hardhat": "2.6.4",
 		"hardhat-dependency-compiler": "1.1.1"
+	},
+	"dependencies": {
+		"prettier-plugin-solidity": "^1.0.0-beta.19"
 	}
 }

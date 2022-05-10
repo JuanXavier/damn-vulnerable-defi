@@ -10,7 +10,6 @@ import "../DamnValuableNFT.sol";
  * @author Damn Vulnerable DeFi (https://damnvulnerabledefi.xyz)
  */
 contract FreeRiderNFTMarketplace is ReentrancyGuard {
-
     using Address for address payable;
 
     DamnValuableNFT public token;
@@ -21,17 +20,20 @@ contract FreeRiderNFTMarketplace is ReentrancyGuard {
 
     event NFTOffered(address indexed offerer, uint256 tokenId, uint256 price);
     event NFTBought(address indexed buyer, uint256 tokenId, uint256 price);
-    
+
     constructor(uint8 amountToMint) payable {
         require(amountToMint < 256, "Cannot mint that many tokens");
         token = new DamnValuableNFT();
 
-        for(uint8 i = 0; i < amountToMint; i++) {
+        for (uint8 i = 0; i < amountToMint; i++) {
             token.safeMint(msg.sender);
-        }        
+        }
     }
 
-    function offerMany(uint256[] calldata tokenIds, uint256[] calldata prices) external nonReentrant {
+    function offerMany(uint256[] calldata tokenIds, uint256[] calldata prices)
+        external
+        nonReentrant
+    {
         require(tokenIds.length > 0 && tokenIds.length == prices.length);
         for (uint256 i = 0; i < tokenIds.length; i++) {
             _offerOne(tokenIds[i], prices[i]);
@@ -48,7 +50,7 @@ contract FreeRiderNFTMarketplace is ReentrancyGuard {
 
         require(
             token.getApproved(tokenId) == address(this) ||
-            token.isApprovedForAll(msg.sender, address(this)),
+                token.isApprovedForAll(msg.sender, address(this)),
             "Account offering must have approved transfer"
         );
 
@@ -59,13 +61,17 @@ contract FreeRiderNFTMarketplace is ReentrancyGuard {
         emit NFTOffered(msg.sender, tokenId, price);
     }
 
-    function buyMany(uint256[] calldata tokenIds) external payable nonReentrant {
+    function buyMany(uint256[] calldata tokenIds)
+        external
+        payable
+        nonReentrant
+    {
         for (uint256 i = 0; i < tokenIds.length; i++) {
             _buyOne(tokenIds[i]);
         }
     }
 
-    function _buyOne(uint256 tokenId) private {       
+    function _buyOne(uint256 tokenId) private {
         uint256 priceToPay = offers[tokenId];
         require(priceToPay > 0, "Token is not being offered");
 
@@ -80,7 +86,7 @@ contract FreeRiderNFTMarketplace is ReentrancyGuard {
         payable(token.ownerOf(tokenId)).sendValue(priceToPay);
 
         emit NFTBought(msg.sender, tokenId, priceToPay);
-    }    
+    }
 
     receive() external payable {}
 }

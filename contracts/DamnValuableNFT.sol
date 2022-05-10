@@ -7,9 +7,9 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 /**
-  * @title DamnValuableNFT
-  * @author Damn Vulnerable DeFi (https://damnvulnerabledefi.xyz)
-  * @notice Implementation of a mintable and burnable NFT with role-based access controls
+ * @title DamnValuableNFT
+ * @author Damn Vulnerable DeFi (https://damnvulnerabledefi.xyz)
+ * @notice Implementation of a mintable and burnable NFT with role-based access controls
  */
 contract DamnValuableNFT is ERC721, ERC721Burnable, AccessControl {
     using Counters for Counters.Counter;
@@ -22,7 +22,11 @@ contract DamnValuableNFT is ERC721, ERC721Burnable, AccessControl {
         _setupRole(MINTER_ROLE, msg.sender);
     }
 
-    function safeMint(address to) public onlyRole(MINTER_ROLE) returns (uint256) {
+    function safeMint(address to)
+        public
+        onlyRole(MINTER_ROLE)
+        returns (uint256)
+    {
         uint256 tokenId = _tokenIdCounter.current();
         _safeMint(to, tokenId);
         _tokenIdCounter.increment();

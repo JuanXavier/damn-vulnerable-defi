@@ -9,9 +9,8 @@ import "@openzeppelin/contracts/utils/Address.sol";
  * @author Damn Vulnerable DeFi (https://damnvulnerabledefi.xyz)
  */
 contract SimpleGovernance {
-
     using Address for address;
-    
+
     struct GovernanceAction {
         address receiver;
         bytes data;
@@ -19,7 +18,7 @@ contract SimpleGovernance {
         uint256 proposedAt;
         uint256 executedAt;
     }
-    
+
     DamnValuableTokenSnapshot public governanceToken;
 
     mapping(uint256 => GovernanceAction) public actions;
@@ -30,14 +29,27 @@ contract SimpleGovernance {
     event ActionExecuted(uint256 actionId, address indexed caller);
 
     constructor(address governanceTokenAddress) {
-        require(governanceTokenAddress != address(0), "Governance token cannot be zero address");
+        require(
+            governanceTokenAddress != address(0),
+            "Governance token cannot be zero address"
+        );
         governanceToken = DamnValuableTokenSnapshot(governanceTokenAddress);
         actionCounter = 1;
     }
-    
-    function queueAction(address receiver, bytes calldata data, uint256 weiAmount) external returns (uint256) {
-        require(_hasEnoughVotes(msg.sender), "Not enough votes to propose an action");
-        require(receiver != address(this), "Cannot queue actions that affect Governance");
+
+    function queueAction(
+        address receiver,
+        bytes calldata data,
+        uint256 weiAmount
+    ) external returns (uint256) {
+        require(
+            _hasEnoughVotes(msg.sender),
+            "Not enough votes to propose an action"
+        );
+        require(
+            receiver != address(this),
+            "Cannot queue actions that affect Governance"
+        );
 
         uint256 actionId = actionCounter;
 
@@ -55,7 +67,7 @@ contract SimpleGovernance {
 
     function executeAction(uint256 actionId) external payable {
         require(_canBeExecuted(actionId), "Cannot execute this action");
-        
+
         GovernanceAction storage actionToExecute = actions[actionId];
         actionToExecute.executedAt = block.timestamp;
 
@@ -78,15 +90,15 @@ contract SimpleGovernance {
      */
     function _canBeExecuted(uint256 actionId) private view returns (bool) {
         GovernanceAction memory actionToExecute = actions[actionId];
-        return (
-            actionToExecute.executedAt == 0 &&
-            (block.timestamp - actionToExecute.proposedAt >= ACTION_DELAY_IN_SECONDS)
-        );
+        return (actionToExecute.executedAt == 0 &&
+            (block.timestamp - actionToExecute.proposedAt >=
+                ACTION_DELAY_IN_SECONDS));
     }
-    
+
     function _hasEnoughVotes(address account) private view returns (bool) {
         uint256 balance = governanceToken.getBalanceAtLastSnapshot(account);
-        uint256 halfTotalSupply = governanceToken.getTotalSupplyAtLastSnapshot() / 2;
+        uint256 halfTotalSupply = governanceToken
+            .getTotalSupplyAtLastSnapshot() / 2;
         return balance > halfTotalSupply;
     }
 }
