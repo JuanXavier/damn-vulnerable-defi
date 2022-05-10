@@ -29,20 +29,6 @@ describe('[Challenge] Truster', function () {
 		expect(await this.token.balanceOf(attacker.address)).to.equal('0')
 	})
 
-	/*
-        More and more lending pools are offering flash loans. In this case, a new pool has launched
-         that is offering flash loans of DVT tokens for free.
-
-        Currently the pool has 1 million DVT tokens in balance. And you have nothing.
-
-        But don't worry, you might be able to take them all from the pool. In a single transaction.
-
-				IDEAS:
-				- Deploy a contract with a malicious  passing something malicous  in the data param
-				crear uina function lampara y pasarla la firma como parametro.
-				la funcion maligna puede ser una que deposite el eth en otro lado
-    */
-
 	it('Exploit', async function () {
 		/** CODE YOUR EXPLOIT HERE  */
 		const TrusterAttack = await ethers.getContractFactory('TrusterAttack', attacker)
