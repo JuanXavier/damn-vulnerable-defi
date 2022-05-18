@@ -1,16 +1,27 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/utils/Address.sol";
+
+/*
+ToDo:
+A surprisingly simple lending pool allows anyone to deposit ETH, and withdraw 
+it at any point in time.
+
+This very simple lending pool has 1000 ETH in balance already, and is offering 
+free flash loans using the deposited ETH to promote their system.
+
+You must take all ETH from the lending pool.
+
+Idea: 
+
+-  Deposit Eth without having eth.
+
+*/
 
 interface IFlashLoanEtherReceiver {
     function execute() external payable;
 }
 
-/**
- * @title SideEntranceLenderPool
- * @author Damn Vulnerable DeFi (https://damnvulnerabledefi.xyz)
- */
 contract SideEntranceLenderPool {
     using Address for address payable;
 
