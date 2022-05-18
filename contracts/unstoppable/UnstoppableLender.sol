@@ -10,7 +10,7 @@ interface IReceiver {
 
 contract UnstoppableLender is ReentrancyGuard {
     IERC20 public immutable damnValuableToken;
-    uint256 public poolBalance; 
+    uint256 public poolBalance;
 
     constructor(address tokenAddress) {
         require(tokenAddress != address(0), "Token address cannot be zero");
@@ -28,12 +28,12 @@ contract UnstoppableLender is ReentrancyGuard {
         require(borrowAmount > 0, "Must borrow at least one token");
         uint256 balanceBefore = damnValuableToken.balanceOf(address(this));
         require(balanceBefore >= borrowAmount, "Not enough tokens in pool");
-        
+
         // Ensured by the protocol via the `depositTokens` function
         assert(poolBalance == balanceBefore);
-        
-        damnValuableToken.transfer(msg.sender, borrowAmount); 
-        
+
+        damnValuableToken.transfer(msg.sender, borrowAmount);
+
         IReceiver(msg.sender).receiveTokens(
             address(damnValuableToken),
             borrowAmount

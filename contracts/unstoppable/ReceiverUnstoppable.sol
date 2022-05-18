@@ -26,6 +26,6 @@ contract ReceiverUnstoppable {
 
     function executeFlashLoan(uint256 amount) external {
         require(msg.sender == owner, "Only owner can execute flash loan");
-		pool.flashLoan(amount);
+        pool.flashLoan(amount);
     }
 }

