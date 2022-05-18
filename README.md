@@ -6,8 +6,6 @@ Featuring flash loans, price oracles, governance, NFTs, lending pools, smart con
 
 Created by [@tinchoabbate](https://twitter.com/tinchoabbate)
 
-## Play
-
 ## Levels
 
 1 - Unstoppable [ X ]
@@ -33,6 +31,8 @@ Created by [@tinchoabbate](https://twitter.com/tinchoabbate)
 11 - Backdoor [ ]
 
 12 - Climber [ ]
+
+## Play
 
 Visit [damnvulnerabledefi.xyz](https://damnvulnerabledefi.xyz)
 
