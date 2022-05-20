@@ -10,11 +10,11 @@ Created by [@tinchoabbate](https://twitter.com/tinchoabbate)
 
 1 - Unstoppable [ X ]
 
-2 - Naive receiver [ X ]
+2 - Naive receiver [ X* ]
 
 3 - Truster [ X ]
 
-4 - Side entrance [ ]
+4 - Side entrance [ X ]
 
 5 - The rewarder [ ]
 

