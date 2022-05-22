@@ -16,9 +16,9 @@ Created by [@tinchoabbate](https://twitter.com/tinchoabbate)
 
 4 - Side entrance [ X ]
 
-5 - The rewarder [ ]
+5 - The rewarder [ X ]
 
-6 - Selfie [ ]
+6 - Selfie [ X ]
 
 7 - Compromised [ ]
 

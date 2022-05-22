@@ -24,9 +24,6 @@ contract FlashLoanerPool is ReentrancyGuard {
 
 		msg.sender.functionCall(abi.encodeWithSignature('receiveFlashLoan(uint256)', amount));
 
-		require(
-			liquidityToken.balanceOf(address(this)) >= balanceBefore,
-			'Flash loan not paid back'
-		);
+		require(liquidityToken.balanceOf(address(this)) >= balanceBefore, 'Flash loan not paid back');
 	}
 }
