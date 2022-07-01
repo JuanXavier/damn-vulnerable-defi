@@ -124,6 +124,7 @@ describe('[Challenge] Puppet', function () {
 		// Execute function of Uniswap contract that allow to swap tokens with ETH.
 		// This will unbalance the ETH/DVT ratio, and devaluate the price of DVT:
 		// from [10/10 = 1] to [0,099/1009 = 0.000098]
+		// https://github.com/Uniswap/v1-contracts/blob/master/contracts/uniswap_exchange.vy
 		await this.uniswapExchange
 			.connect(attacker)
 			.tokenToEthSwapInput(tokensSwapAmount, ethers.utils.parseEther('9'), deadline)

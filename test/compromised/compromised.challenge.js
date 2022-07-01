@@ -60,8 +60,12 @@ describe('Compromised challenge', function () {
 		this.nftToken = await DamnValuableNFTFactory.attach(await this.exchange.token())
 	})
 
+	/** CODE YOUR EXPLOIT HERE */
 	it('Exploit', async function () {
-		/** CODE YOUR EXPLOIT HERE */
+		/**
+		 * MHhjNjc4ZWYxYWE0NTZkYTY1YzZmYzU4NjFkNDQ4OTJjZGZhYzBjNmM4YzI1NjBiZjBjOWZiY2RhZTJmNDczNWE5
+		 * MHgyMDgyNDJjNDBhY2RmYTllZDg4OWU2ODVjMjM1NDdhY2JlZDliZWZjNjAzNzFlOTg3NWZiY2Q3MzYzNDBiYjQ4
+		 */
 	})
 
 	after(async function () {

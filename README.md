@@ -67,13 +67,13 @@ Created by [@tinchoabbate](https://twitter.com/tinchoabbate)
     - 0x81A5D6E50C214044bE44cA0CB057fe119097850c
     Starting with only 0.1 ETH in balance, you must steal all ETH available in the exchange.
 
-### **8 - Puppet [ ]**
+### **8 - Puppet [ X ]**
 
     There's a huge lending pool borrowing Damn Valuable Tokens (DVTs), where you first need to deposit twice the borrow amount in ETH as collateral. The pool currently has 100000 DVTs in liquidity.
     There's a DVT market opened in an Uniswap v1 exchange, currently with 10 ETH and 10 DVT in liquidity.
     Starting with 25 ETH and 1000 DVTs in balance, you must steal all tokens from the lending pool.
 
-### **9 - Puppet v2 [ ]**
+### **9 - Puppet v2 [ X ]**
 
     The developers of the last lending pool are saying that they've learned the lesson. And just released a new version!
     Now they're using a Uniswap v2 exchange as a price oracle, along with the recommended utility libraries. That should be enough.

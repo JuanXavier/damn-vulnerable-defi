@@ -14,14 +14,8 @@ describe('[Challenge] Naive receiver', function () {
 		/** SETUP SCENARIO - NO NEED TO CHANGE ANYTHING HERE */
 		;[deployer, user, attacker] = await ethers.getSigners()
 
-		const LenderPoolFactory = await ethers.getContractFactory(
-			'NaiveReceiverLenderPool',
-			deployer
-		)
-		const FlashLoanReceiverFactory = await ethers.getContractFactory(
-			'FlashLoanReceiver',
-			deployer
-		)
+		const LenderPoolFactory = await ethers.getContractFactory('NaiveReceiverLenderPool', deployer)
+		const FlashLoanReceiverFactory = await ethers.getContractFactory('FlashLoanReceiver', deployer)
 
 		this.pool = await LenderPoolFactory.deploy()
 		await deployer.sendTransaction({to: this.pool.address, value: ETHER_IN_POOL})
@@ -32,12 +26,9 @@ describe('[Challenge] Naive receiver', function () {
 		this.receiver = await FlashLoanReceiverFactory.deploy(this.pool.address)
 		await deployer.sendTransaction({to: this.receiver.address, value: ETHER_IN_RECEIVER})
 
-		expect(await ethers.provider.getBalance(this.receiver.address)).to.be.equal(
-			ETHER_IN_RECEIVER
-		)
+		expect(await ethers.provider.getBalance(this.receiver.address)).to.be.equal(ETHER_IN_RECEIVER)
 	})
 
-	// Drain all ETH funds from the user's contract. Doing it in a single transaction is a big plus ;)
 	it('Exploit', async function () {
 		/** CODE YOUR EXPLOIT HERE */
 		for (i = 1; i <= 10; i++) {
