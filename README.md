@@ -13,6 +13,8 @@ Created by [@tinchoabbate](https://twitter.com/tinchoabbate)
     If only there was a way to attack and stop the pool from offering flash loans...
     You start with 100 DVT tokens in balance.
 
+[Article with solution explained](https://medium.com/@juanxaviervalverde/damn-vulnerable-defi-unstoppable-level-1-solution-a1a31a632996)
+
 ### **2 - Naive receiver [ X ]**
 
     There's a lending pool offering quite expensive flash loans of Ether, which has 1000 ETH in balance.

