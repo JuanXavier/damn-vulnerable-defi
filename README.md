@@ -29,6 +29,8 @@ Created by [@tinchoabbate](https://twitter.com/tinchoabbate)
     Currently the pool has 1 million DVT tokens in balance. And you have nothing.
     But don't worry, you might be able to take them all from the pool. In a single transaction.
 
+[Article with detailed explanation](https://medium.com/@juanxaviervalverde/damn-vulnerable-defi-truster-level-3-solution-3a08d34ad07b)
+
 ### **4 - Side entrance [ X ]**
 
     A surprisingly simple lending pool allows anyone to deposit ETH, and withdraw it at any point in time.
