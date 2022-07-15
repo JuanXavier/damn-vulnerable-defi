@@ -37,6 +37,8 @@ Created by [@tinchoabbate](https://twitter.com/tinchoabbate)
     This very simple lending pool has 1000 ETH in balance already, and is offering free flash loans using the deposited ETH to promote their system.
     You must take all ETH from the lending pool.
 
+[Article with detailed explanation](https://medium.com/@juanxaviervalverde/damn-vulnerable-defi-side-entrance-level-4-solution-8d76d4d629e1)
+
 ### **5 - The rewarder [ X ]**
 
     There's a pool offering rewards in tokens every 5 days for those who deposit their DVT tokens into it.
