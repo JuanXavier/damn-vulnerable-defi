@@ -92,9 +92,6 @@ contract TheRewarderPool {
         roundNumber++;
     }
 
-    // 1: Que la ultima vez que recogio tokens sea despues (o al mismo moment) del ultimo snapshot
-    // (cnstructor o distribucion de tokens).
-    // 2. Que la ultima vez que recogio tokens sea antes del ultimo snapshot + 5 dias
     function _hasRetrievedReward(address account) private view returns (bool) {
         return (lastRewardTimestamps[account] >=
             lastRecordedSnapshotTimestamp &&

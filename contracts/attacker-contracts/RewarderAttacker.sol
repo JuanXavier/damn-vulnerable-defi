@@ -23,7 +23,7 @@ contract RewarderAttacker {
         rewarderPool = TheRewarderPool(_rewarderPool);
         DVT = DamnValuableToken(_dvt);
         rewardToken = RewardToken(_rewardToken);
-        owner == msg.sender;
+        owner = msg.sender;
     }
 
     function executeFlashLoan(uint256 amount) external {
