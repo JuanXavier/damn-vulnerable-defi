@@ -113,8 +113,8 @@ describe('[Challenge] Puppet', function () {
 		)
 	})
 
-	/** CODE YOUR EXPLOIT HERE */
 	it('Exploit', async function () {
+		/** CODE YOUR EXPLOIT HERE */
 		const tokensSwapAmount = ethers.utils.parseEther('999')
 		const deadline = new Date().getTime() + 1000
 

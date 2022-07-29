@@ -71,6 +71,7 @@ describe('[Challenge] The rewarder', function () {
 
 	it('Exploit', async function () {
 		/** CODE YOUR EXPLOIT HERE */
+
 		// Travel through time (5 days)
 		await ethers.provider.send('evm_increaseTime', [5 * 24 * 60 * 60])
 

@@ -4,10 +4,6 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 
-/**
- * @title ClimberTimelock
- * @author Damn Vulnerable DeFi (https://damnvulnerabledefi.xyz)
- */
 contract ClimberTimelock is AccessControl {
     using Address for address;
 

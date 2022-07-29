@@ -60,28 +60,5 @@ contract PuppetPool is ReentrancyGuard {
 
     /**
      ... functions to deposit, redeem, repay, calculate interest, and so on ...
-
-        precio = balance en ether / balance en token
-
-        0.
-            Pool =           100000 DVT
-            Uniswap =     10 ETH => 10 DVT = PRECIO = 1
-            Me =              25 ETH => 1000 DVT
-            
-        1 . enviar 1000 tokens al exchange
-
-            Pool =           100000 DVT
-            Uniswap =     10 ETH => 1010 DVT = PRECIO = 0.009
-            Me =              25 ETH => 0 DVT
-
-        2. Pedir prestado
-
-		num= DEPOSITED_TOKENS + ETH_RESERVE
-		den= TOTAL_TOKENS + DEPOSITED_TOKENS
-		
-		num = 1000 DVT * 10 ETH
-		den = 10 DVT + 1000 DVT
-		RESULT = 
-
 	*/
 }

