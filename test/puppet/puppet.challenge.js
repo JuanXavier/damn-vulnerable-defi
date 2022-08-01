@@ -137,7 +137,7 @@ describe('[Challenge] Puppet', function () {
 			String(await this.lendingPool.calculateDepositRequired(tokensToSwap))
 		)
 
-		//
+		// Borrow all tokens
 		await this.lendingPool
 			.connect(attacker)
 			.borrow(POOL_INITIAL_TOKEN_BALANCE, {value: ethers.utils.parseEther('20')})
