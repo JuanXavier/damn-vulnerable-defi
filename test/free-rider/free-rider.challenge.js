@@ -110,7 +110,7 @@ describe('[Challenge] Free Rider', function () {
 		/** CODE YOUR EXPLOIT HERE */
 		// Deploy evil contract
 		this.attackerContract = await (
-			await ethers.getContractFactory('FreeRiderAttacker', attacker)
+			await ethers.getContractFactory('AttackFR', attacker)
 		).deploy(
 			this.marketplace.address,
 			this.nft.address,
@@ -119,28 +119,39 @@ describe('[Challenge] Free Rider', function () {
 			this.buyerContract.address
 		)
 
-		//Attack
+		// this.attackerContract = await (
+		// 	await ethers.getContractFactory('FreeRiderAttacker', attacker)
+		// ).deploy(
+		// 	this.marketplace.address,
+		// 	this.nft.address,
+		// 	this.uniswapPair.address,
+		// 	this.weth.address,
+		// 	this.buyerContract.address
+		// )
+
+		// Attack
+		await this.attackerContract.connect(attacker).attack(NFT_PRICE)
 	})
 
-	// after(async function () {
-	// 	/** SUCCESS CONDITIONS */
+	after(async function () {
+		/** SUCCESS CONDITIONS */
 
-	// 	// Attacker must have earned all ETH from the payout
-	// 	expect(await ethers.provider.getBalance(attacker.address)).to.be.gt(BUYER_PAYOUT)
-	// 	expect(await ethers.provider.getBalance(this.buyerContract.address)).to.be.eq('0')
+		// Attacker must have earned all ETH from the payout
+		expect(await ethers.provider.getBalance(attacker.address)).to.be.gt(BUYER_PAYOUT)
+		expect(await ethers.provider.getBalance(this.buyerContract.address)).to.be.eq('0')
 
-	// 	// The buyer extracts all NFTs from its associated contract
-	// 	for (let tokenId = 0; tokenId < AMOUNT_OF_NFTS; tokenId++) {
-	// 		await this.nft.connect(buyer).transferFrom(this.buyerContract.address, buyer.address, tokenId)
-	// 		expect(await this.nft.ownerOf(tokenId)).to.be.eq(buyer.address)
-	// 	}
+		// The buyer extracts all NFTs from its associated contract
+		for (let tokenId = 0; tokenId < AMOUNT_OF_NFTS; tokenId++) {
+			await this.nft.connect(buyer).transferFrom(this.buyerContract.address, buyer.address, tokenId)
+			expect(await this.nft.ownerOf(tokenId)).to.be.eq(buyer.address)
+		}
 
-	// 	// Exchange must have lost NFTs and ETH
-	// 	expect(await this.marketplace.amountOfOffers()).to.be.eq('0')
-	// 	expect(await ethers.provider.getBalance(this.marketplace.address)).to.be.lt(
-	// 		MARKETPLACE_INITIAL_ETH_BALANCE
-	// 	)
-	// })
+		// Exchange must have lost NFTs and ETH
+		expect(await this.marketplace.amountOfOffers()).to.be.eq('0')
+		expect(await ethers.provider.getBalance(this.marketplace.address)).to.be.lt(
+			MARKETPLACE_INITIAL_ETH_BALANCE
+		)
+	})
 })
 
 /**
