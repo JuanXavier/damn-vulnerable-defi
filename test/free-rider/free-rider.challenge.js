@@ -111,7 +111,13 @@ describe('[Challenge] Free Rider', function () {
 		// Deploy evil contract
 		this.attackerContract = await (
 			await ethers.getContractFactory('FreeRiderAttacker', attacker)
-		).deploy()
+		).deploy(
+			this.marketplace.address,
+			this.nft.address,
+			this.uniswapPair.address,
+			this.weth.address,
+			this.buyerContract.address
+		)
 
 		//Attack
 	})
