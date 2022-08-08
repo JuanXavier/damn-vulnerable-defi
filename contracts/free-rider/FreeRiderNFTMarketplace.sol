@@ -9,7 +9,6 @@ import "../DamnValuableNFT.sol";
  * @title FreeRiderNFTMarketplace
  * @author Damn Vulnerable DeFi (https://damnvulnerabledefi.xyz)
  */
-
 contract FreeRiderNFTMarketplace is ReentrancyGuard {
     using Address for address payable;
 

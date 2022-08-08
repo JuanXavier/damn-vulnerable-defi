@@ -109,76 +109,18 @@ describe('[Challenge] Free Rider', function () {
 	it('Exploit', async function () {
 		/** CODE YOUR EXPLOIT HERE */
 		// Deploy evil contract
-		// this.attackerContract = await (
-		// 	await ethers.getContractFactory('FreeRiderAttacker', attacker)
-		// ).deploy()
-		// await this.marketplace.connect(attacker).attack()
+		this.attackerContract = await (
+			await ethers.getContractFactory('FreeRiderAttacker', attacker)
+		).deploy()
 
-		console.log(
-			'ETH BEFORE',
-			String(await ethers.provider.getBalance(attacker.address)).slice(0, -15)
-		)
-		console.log('DVT BEFORE', String(await this.token.balanceOf(attacker.address)).slice(0, -15))
-		console.log('WETH BEFORE', String(await this.weth.balanceOf(attacker.address)).slice(0, -15))
-
-		/****************************** */
-
-		const valueToExchange = ethers.utils.parseEther('0.4')
-
-		// get weth
-		await this.weth.connect(attacker).deposit({value: valueToExchange})
-
-		console.log(
-			'WETH INTERMEDIATE',
-			String(await this.weth.balanceOf(attacker.address)).slice(0, -15)
-		)
-
-		//approve weth
-		await this.weth.connect(attacker).approve(this.uniswapRouter.address, valueToExchange)
-
-		// swap weth for dvt
-		await this.uniswapRouter.connect(attacker).swapExactTokensForTokens(
-			valueToExchange, // amountIn
-			0, // amountOutMin
-			[this.weth.address, this.token.address], //[tokenFromUserToPool, tokenFromPoolToUser]
-			attacker.address, // to
-			(await ethers.provider.getBlock('latest')).timestamp * 20 // deadline
-		)
-		/****************************** */
-		console.log(
-			'ETH _AFTER',
-			String(await ethers.provider.getBalance(attacker.address)).slice(0, -15)
-		)
-		console.log('DVT _AFTER', String(await this.token.balanceOf(attacker.address)).slice(0, -15))
-		console.log('WETH _AFTER', String(await this.weth.balanceOf(attacker.address)).slice(0, -15))
-		/****************************** */
-		// Approve
-		await this.token
-			.connect(attacker)
-			.approve(this.uniswapRouter.address, await this.token.balanceOf(attacker.address))
-
-		await this.uniswapRouter.connect(attacker).swapExactTokensForTokens(
-			await this.token.balanceOf(attacker.address), // amountIn
-			0, // amountOutMin
-			[this.token.address, this.weth.address], //[tokenFromUserToPool, tokenFromPoolToUser]
-			attacker.address, // to
-			(await ethers.provider.getBlock('latest')).timestamp * 20 // deadline
-		)
-		/****************************** */
-
-		console.log(
-			'ETH _AFTER',
-			String(await ethers.provider.getBalance(attacker.address)).slice(0, -15)
-		)
-		console.log('DVT _AFTER', String(await this.token.balanceOf(attacker.address)).slice(0, -15))
-		console.log('WETH _AFTER', String(await this.weth.balanceOf(attacker.address)).slice(0, -15))
+		//Attack
 	})
 
 	// after(async function () {
-	// 	/** SUCCESS CONDITIONS */∂
+	// 	/** SUCCESS CONDITIONS */
 
 	// 	// Attacker must have earned all ETH from the payout
-	// 	expect(ço.be.gt(BUYER_PAYOUT)
+	// 	expect(await ethers.provider.getBalance(attacker.address)).to.be.gt(BUYER_PAYOUT)
 	// 	expect(await ethers.provider.getBalance(this.buyerContract.address)).to.be.eq('0')
 
 	// 	// The buyer extracts all NFTs from its associated contract
@@ -194,3 +136,12 @@ describe('[Challenge] Free Rider', function () {
 	// 	)
 	// })
 })
+
+/**
+ *
+ * https://docs.uniswap.org/protocol/V2/guides/smart-contract-integration/using-flash-swaps
+ * https://github.com/Uniswap/v2-core/blob/master/contracts/UniswapV2Pair.sol#L159
+ *
+ *
+ *
+ */

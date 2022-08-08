@@ -9,7 +9,11 @@ function calculateTokenToEthInputPrice(tokensSold, tokensInReserve, etherInReser
 	return tokensSold
 		.mul(ethers.BigNumber.from('997'))
 		.mul(etherInReserve)
-		.div(tokensInReserve.mul(ethers.BigNumber.from('1000')).add(tokensSold.mul(ethers.BigNumber.from('997'))))
+		.div(
+			tokensInReserve
+				.mul(ethers.BigNumber.from('1000'))
+				.add(tokensSold.mul(ethers.BigNumber.from('997')))
+		)
 }
 
 describe('[Challenge] Puppet', function () {
@@ -46,7 +50,9 @@ describe('[Challenge] Puppet', function () {
 			'0x15af1d78b58c40000', // 25 ETH
 		])
 
-		expect(await ethers.provider.getBalance(attacker.address)).to.equal(ATTACKER_INITIAL_ETH_BALANCE)
+		expect(await ethers.provider.getBalance(attacker.address)).to.equal(
+			ATTACKER_INITIAL_ETH_BALANCE
+		)
 
 		// Deploy token to be traded in Uniswap
 		this.token = await DamnValuableTokenFactory.deploy()
@@ -65,7 +71,10 @@ describe('[Challenge] Puppet', function () {
 		this.uniswapExchange = await UniswapExchangeFactory.attach(events[0].args.exchange)
 
 		// Deploy the lending pool
-		this.lendingPool = await PuppetPoolFactory.deploy(this.token.address, this.uniswapExchange.address)
+		this.lendingPool = await PuppetPoolFactory.deploy(
+			this.token.address,
+			this.uniswapExchange.address
+		)
 
 		// Add initial token and ETH liquidity to the pool
 		await this.token.approve(this.uniswapExchange.address, UNISWAP_INITIAL_TOKEN_RESERVE)
@@ -118,10 +127,8 @@ describe('[Challenge] Puppet', function () {
 		 * Approve and swap DVT tokens with ETH calling the Uniswap contract.
 		 * We'll give 999 DVT to the exchange, and get some ETH out of it, creating an imbalance in the
 		 * ETH/DVT ratio, which in turn will devaluate the price of DVT
-		 * FROM:
-		 * 10 ETH        /    10 DVT  =       1        * 2 =      2         wei per DVT
-		 * TO:
-		 * 0,099 ETH / 1009 DVT = 0.000098 * 2 = 0.000196 wei per DVT
+		 * FROM:		      10 ETH        /    10 DVT  =       1        * 2   =      2         wei per DVT
+		 * TO:        		     0,099 ETH / 1009 DVT = 0.000098 * 2 = 0.000196 wei per DVT
 		 * And so, the collateral needed for borrowing the 100.000 DVT becomes
 		 * ~19 ETH (0.000098 * 100.000 * 2) instead of the original 200.000 ETH (1 * 100.000 * 2)
 		 */
