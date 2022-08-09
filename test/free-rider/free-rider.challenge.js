@@ -149,12 +149,3 @@ describe('[Challenge] Free Rider', function () {
 		)
 	})
 })
-
-/**
- *
- * https://docs.uniswap.org/protocol/V2/guides/smart-contract-integration/using-flash-swaps
- * https://github.com/Uniswap/v2-core/blob/master/contracts/UniswapV2Pair.sol#L159
- *
- *
- *
- */

