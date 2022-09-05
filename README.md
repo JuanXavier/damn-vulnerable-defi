@@ -55,7 +55,7 @@ Created by [@tinchoabbate](https://twitter.com/tinchoabbate)
     What could go wrong, right ?
     You start with no DVT tokens in balance, and the pool has 1.5 million. Your objective: take them all.
 
-[Article with detailed explanation]()
+[Article with detailed explanation](https://medium.com/@juanxaviervalverde/damn-vulnerable-defi-selfie-level-6-solution-aa7bcf507aec)
 
 ### **7 - Compromised [ X ]**
 
@@ -78,7 +78,7 @@ Created by [@tinchoabbate](https://twitter.com/tinchoabbate)
     - 0x81A5D6E50C214044bE44cA0CB057fe119097850c
     Starting with only 0.1 ETH in balance, you must steal all ETH available in the exchange.
 
-[Article with detailed explanation]()
+[Article with detailed explanation](https://medium.com/@juanxaviervalverde/damn-vulnerable-defi-compromised-level-7-solution-ef9c5f31b0d7)
 
 ### **8 - Puppet [ X ]**
 
@@ -86,7 +86,7 @@ Created by [@tinchoabbate](https://twitter.com/tinchoabbate)
     There's a DVT market opened in an Uniswap v1 exchange, currently with 10 ETH and 10 DVT in liquidity.
     Starting with 25 ETH and 1000 DVTs in balance, you must steal all tokens from the lending pool.
 
-[Article with detailed explanation]()
+[Article with detailed explanation](https://medium.com/@juanxaviervalverde/damn-vulnerable-defi-puppet-level-8-solution-a156a28cef01)
 
 ### **9 - Puppet v2 [ X ]**
 
@@ -94,7 +94,7 @@ Created by [@tinchoabbate](https://twitter.com/tinchoabbate)
     Now they're using a Uniswap v2 exchange as a price oracle, along with the recommended utility libraries. That should be enough.
     You start with 20 ETH and 10000 DVT tokens in balance. The new lending pool has a million DVT tokens in balance. You know what to do ;)
 
-[Article with detailed explanation]()
+[Article with detailed explanation](https://medium.com/@juanxaviervalverde/damn-vulnerable-defi-puppet-v2-level-9-solution-266a2ee7c70)
 
 ### **10 - Free rider [ ]**
 
