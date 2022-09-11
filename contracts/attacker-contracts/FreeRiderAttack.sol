@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity 0.8.7;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
@@ -14,7 +14,7 @@ interface IWETH {
     function withdraw(uint256) external;
 }
 
-contract FreeRiderAttacker {
+contract FreeRiderAttack {
     // Interfaces
     IERC721 private immutable NFT;
     IWETH private immutable WETH;
