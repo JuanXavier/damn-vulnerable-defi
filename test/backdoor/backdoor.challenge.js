@@ -13,9 +13,7 @@ describe("[Challenge] Backdoor", function () {
 
 		// Deploy Gnosis Safe master copy and factory contracts
 		this.masterCopy = await (await ethers.getContractFactory("GnosisSafe", deployer)).deploy()
-		this.walletFactory = await (
-			await ethers.getContractFactory("GnosisSafeProxyFactory", deployer)
-		).deploy()
+		this.walletFactory = await (await ethers.getContractFactory("GnosisSafeProxyFactory", deployer)).deploy()
 		this.token = await (await ethers.getContractFactory("DamnValuableToken", deployer)).deploy()
 
 		// Deploy the registry
@@ -37,7 +35,7 @@ describe("[Challenge] Backdoor", function () {
 
 		// Deploy
 		this.backdoorAttacker = await (
-			await ethers.getContractFactory("BackdoorAttacker", attacker)
+			await ethers.getContractFactory("BackdoorAttack", attacker)
 		).deploy(
 			this.masterCopy.address,
 			this.walletFactory.address,
@@ -47,6 +45,8 @@ describe("[Challenge] Backdoor", function () {
 
 		// Attack
 		await this.backdoorAttacker.connect(attacker).attack(users)
+
+		console.log("Attacker DVT balance after attack: ", String(await this.token.balanceOf(attacker.address)))
 	})
 
 	after(async function () {

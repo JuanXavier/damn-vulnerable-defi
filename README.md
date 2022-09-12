@@ -105,14 +105,14 @@ Created by [@tinchoabbate](https://twitter.com/tinchoabbate)
 
 [Article with detailed explanation](https://medium.com/@juanxaviervalverde/damn-vulnerable-defi-free-rider-level-10-solution-e39fc43296c7)
 
-### **11 - Backdoor [ ]**
+### **11 - Backdoor [ X ]**
 
     To incentivize the creation of more secure wallets in their team, someone has deployed a registry of Gnosis Safe wallets. When someone in the team deploys and registers a wallet, they will earn 10 DVT tokens.
     To make sure everything is safe and sound, the registry tightly integrates with the legitimate Gnosis Safe Proxy Factory, and has some additional safety checks.
     Currently there are four people registered as beneficiaries: Alice, Bob, Charlie and David. The registry has 40 DVT tokens in balance to be distributed among them.
     Your goal is to take all funds from the registry. In a single transaction.
 
-[Article with detailed explanation]()
+[Article with detailed explanation](https://medium.com/@juanxaviervalverde/damn-vulnerable-defi-backdoor-level-11-solution-bbb09332e5dd)
 
 ### **12 - Climber [ ]**
 
