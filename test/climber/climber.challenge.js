@@ -47,7 +47,7 @@ describe("[Challenge] Climber", function () {
     /** CODE YOUR EXPLOIT HERE */
     this.attackerContract = await (
       await ethers.getContractFactory("ClimberAttack", attacker)
-    ).deploy(this.timelock.address, this.vault.address, attacker.address)
+    ).deploy(this.timelock.address, this.vault.address)
 
     await this.attackerContract.connect(attacker).attack()
 

