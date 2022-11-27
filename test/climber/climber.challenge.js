@@ -49,7 +49,7 @@ describe("[Challenge] Climber", function () {
       await ethers.getContractFactory("ClimberAttack", attacker)
     ).deploy(this.timelock.address, this.vault.address)
 
-    await this.attackerContract.connect(attacker).executeInTimelock()
+    await this.attackerContract.connect(attacker).timelockExecute()
 
     this.climberVaultV2 = await ethers.getContractFactory("ClimberVaultV2", attacker)
     const vaultV2 = await upgrades.upgradeProxy(this.vault.address, this.climberVaultV2)
