@@ -114,7 +114,7 @@ Created by [@tinchoabbate](https://twitter.com/tinchoabbate)
 
 [Article with detailed explanation](https://medium.com/@juanxaviervalverde/damn-vulnerable-defi-backdoor-level-11-solution-bbb09332e5dd)
 
-### **12 - Climber [ ]**
+### **12 - Climber [ X ]**
 
     There's a secure vault contract guarding 10 million DVT tokens. The vault is upgradeable, following the UUPS pattern.
     The owner of the vault, currently a timelock contract, can withdraw a very limited amount of tokens every 15 days.
@@ -124,13 +124,11 @@ Created by [@tinchoabbate](https://twitter.com/tinchoabbate)
 
 [Article with detailed explanation]()
 
-### **13 - Safe Miners [ ]**
+### **13 - Safe Miners [ X ]**
 
     Somebody has sent +2 million DVT tokens to 0x79658d35aB5c38B6b988C23D02e0410A380B8D5c. But the address is empty, isn't it?
     To pass this challenge, you have to take all tokens out.
     You may need to use prior knowledge, safely.
-
-[Article with detailed explanation]()
 
 ## Play
 
