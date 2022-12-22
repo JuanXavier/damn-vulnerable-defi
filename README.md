@@ -122,7 +122,7 @@ Created by [@tinchoabbate](https://twitter.com/tinchoabbate)
     On the timelock, only an account with a "Proposer" role can schedule actions that can be executed 1 hour later.
     Your goal is to empty the vault.
 
-[Article with detailed explanation]()
+[Article with detailed explanation](https://medium.com/@juanxaviervalverde/damn-vulnerable-defi-climber-level-12-solution-9b76357fbbfd)
 
 ### **13 - Safe Miners [ X ]**
 
